@@ -213,3 +213,114 @@ document.getElementById("rest-btn").addEventListener(
     updateStatus("Maya rested and is ready for a new day!");
   }
 );
+
+
+// OPEN THE WATER MENU
+
+document.getElementById("water-btn").addEventListener(
+  "click",
+  function() {
+    document.getElementById("water-modal")
+      .classList.remove("hidden");
+  }
+);
+
+
+// CLOSE THE WATER MENU
+
+document.getElementById("cancel-water-btn").addEventListener(
+  "click",
+  function() {
+    document.getElementById("water-modal")
+      .classList.add("hidden");
+  }
+);
+
+
+// CREATE A WATER COLLECTION FUNCTION
+
+function collectWater(source, travelTime, sicknessChance) {
+
+  // Increase hydration
+  changeStat("hydration", 30);
+
+  // Track total hours spent collecting water
+  game.waterHours += travelTime;
+
+  // Advance the game clock
+  advanceTime(travelTime);
+
+  // Close the water menu
+  document.getElementById("water-modal")
+    .classList.add("hidden");
+
+  // Determine if Maya gets sick
+  let randomNumber = Math.random();
+
+  if (randomNumber < sicknessChance) {
+    changeStat("health", -15);
+    changeStat("energy", -20);
+    changeStat("mood", -10);
+
+    game.sickDays += 1;
+
+    showEvent(
+      "Maya isn't feeling well. The water from the " +
+      source + " may have made her sick.",
+      "Health -15, Energy -20, Mood -10"
+    );
+
+  } else {
+    updateStatus(
+      "Maya collected water from the " + source + "."
+    );
+  }
+}
+
+
+// MAKE THE RIVER BUTTON WORK
+
+document.getElementById("river-btn").addEventListener(
+  "click",
+  function() {
+    collectWater("river", 2, 0.60);
+  }
+);
+
+
+// MAKE THE PUBLIC PUMP BUTTON WORK
+
+document.getElementById("pump-btn").addEventListener(
+  "click",
+  function() {
+    collectWater("public pump", 0.75, 0.10);
+  }
+);
+
+
+// DISPLAY AN EVENT POP-UP
+
+function showEvent(message, effects) {
+
+  document.getElementById("event-text").textContent =
+    message;
+
+  document.getElementById("event-effects").textContent =
+    effects;
+
+  document.getElementById("event-modal")
+    .classList.remove("hidden");
+}
+
+
+// CLOSE THE EVENT POP-UP
+
+document.getElementById("event-continue-btn").addEventListener(
+  "click",
+  function() {
+    document.getElementById("event-modal")
+      .classList.add("hidden");
+
+    updateStats();
+  }
+);
