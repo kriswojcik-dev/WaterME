@@ -1,11 +1,11 @@
 
- // WATER ME - GAME JAVASCRIPT
+// WATER ME - GAME JAVASCRIPT
 
-// CREATE GAME VARIABLES
+// GAME VARIABLES
 
 let game = {
   day: 1,
-  time: 8, // 8:00 AM
+  time: 8,
 
   hydration: 70,
   health: 80,
@@ -15,58 +15,48 @@ let game = {
 
   classesAttended: 0,
   waterHours: 0,
-  sickDays: 0
+  sickDays: 0,
+
+  lastSchoolDay: 0,
+  daysSick: []
 };
 
 
-// FUNCTION TO CHANGE SCREENS
+// CHANGE SCREENS
 
 function showScreen(screenId) {
-  // Find all sections with the class "screen"
   const screens = document.querySelectorAll(".screen");
 
-  // Hide each screen
   screens.forEach(function(screen) {
     screen.classList.remove("active");
   });
 
-  // Show the screen we want
   document.getElementById(screenId).classList.add("active");
 }
 
 
-// FUNCTION TO UPDATE STATS
+// UPDATE STATS
 
 function updateStats() {
-  const stats = [
-    "hydration",
-    "health",
-    "energy",
-    "mood"
-  ];
+  const stats = ["hydration", "health", "energy", "mood"];
 
   stats.forEach(function(stat) {
-    // Update the percentage text
     document.getElementById(stat + "-value").textContent =
       game[stat] + "%";
 
-    // Update the progress bar
     document.getElementById(stat + "-bar").value =
       game[stat];
   });
 
-  // Update school progress
   document.getElementById("school-value").textContent =
     game.schoolProgress + "%";
 
   document.getElementById("school-bar").value =
     game.schoolProgress;
 
-  // Update the day
   document.getElementById("day-display").textContent =
-    game.day;
+    Math.min(game.day, 7);
 
-  // Update the clock
   const hours = Math.floor(game.time);
   const minutes = Math.round((game.time - hours) * 60);
   const displayHour = hours % 12 || 12;
@@ -77,13 +67,14 @@ function updateStats() {
     String(minutes).padStart(2, "0") +
     " " + ampm;
 
-  // Update time of day
   let period = "Morning";
 
   if (game.time >= 12 && game.time < 17) {
     period = "Afternoon";
   } else if (game.time >= 17) {
     period = "Evening";
+  } else if (game.time < 6) {
+    period = "Night";
   }
 
   document.getElementById("period-display").textContent =
@@ -91,7 +82,45 @@ function updateStats() {
 }
 
 
-// MAKE THE START BUTTON WORK
+// CHANGE STATS SAFELY
+
+function changeStat(stat, amount) {
+  game[stat] += amount;
+
+  game[stat] = Math.max(0, Math.min(100, game[stat]));
+
+  updateStats();
+}
+
+
+// UPDATE STATUS
+
+function updateStatus(message) {
+  document.getElementById("status-message").textContent =
+    message;
+}
+
+
+// ADVANCE TIME
+
+function advanceTime(hours) {
+  game.time += hours;
+
+  // Move to the next day after midnight
+  while (game.time >= 24) {
+    game.time -= 24;
+    game.day += 1;
+  }
+
+  updateStats();
+
+  if (game.day > 7) {
+    endGame();
+  }
+}
+
+
+// START GAME
 
 document.getElementById("start-btn").addEventListener(
   "click",
@@ -102,7 +131,7 @@ document.getElementById("start-btn").addEventListener(
 );
 
 
-// MAKE HOW TO PLAY WORK
+// HOW TO PLAY
 
 document.getElementById("how-to-btn").addEventListener(
   "click",
@@ -111,9 +140,6 @@ document.getElementById("how-to-btn").addEventListener(
       .classList.remove("hidden");
   }
 );
-
-
-// MAKE GOT IT WORK
 
 document.getElementById("got-it-btn").addEventListener(
   "click",
@@ -124,41 +150,6 @@ document.getElementById("got-it-btn").addEventListener(
 );
 
 
- // CHANGE STATS SAFELY
-
-function changeStat(stat, amount) {
-  game[stat] += amount;
-
-  // Keep stats between 0 and 100
-  game[stat] = Math.max(0, Math.min(100, game[stat]));
-
-  updateStats();
-}
-
-
-// UPDATE MAYA'S STATUS MESSAGE
-
-function updateStatus(message) {
-  document.getElementById("status-message").textContent =
-    message;
-}
-
-
-// ADVANCE GAME TIME
-
-function advanceTime(hours) {
-  game.time += hours;
-
-  // Convert time to a 24-hour clock
-  if (game.time >= 24) {
-    game.time = game.time % 24;
-    game.day += 1;
-  }
-
-  updateStats();
-}
-
-
 // EAT BUTTON
 
 document.getElementById("eat-btn").addEventListener(
@@ -167,9 +158,9 @@ document.getElementById("eat-btn").addEventListener(
     changeStat("health", 5);
     changeStat("energy", 10);
 
-    advanceTime(0.5);
-
     updateStatus("Maya ate a meal and feels better!");
+
+    advanceTime(0.5);
   }
 );
 
@@ -179,16 +170,44 @@ document.getElementById("eat-btn").addEventListener(
 document.getElementById("school-btn").addEventListener(
   "click",
   function() {
+
+    // No classes on Days 6 and 7
+    if (game.day > 5) {
+      updateStatus("There is no school on the weekend!");
+      return;
+    }
+
+    // School can only happen once per day
+    if (game.lastSchoolDay === game.day) {
+      updateStatus("Maya already attended school today!");
+      return;
+    }
+
+    // School must begin by 4:00 PM
+    if (game.time > 16) {
+      updateStatus("It's too late to attend school today!");
+      return;
+    }
+
+    // Maya needs enough energy and hydration
+    if (game.energy < 20 || game.hydration < 20) {
+      updateStatus(
+        "Maya is too tired or thirsty to attend school!"
+      );
+      return;
+    }
+
+    game.lastSchoolDay = game.day;
+    game.classesAttended += 1;
+
     changeStat("schoolProgress", 15);
     changeStat("mood", 5);
     changeStat("energy", -20);
     changeStat("hydration", -20);
 
-    game.classesAttended += 1;
+    updateStatus("Maya made it to class today!");
 
     advanceTime(8);
-
-    updateStatus("Maya attended school today!");
   }
 );
 
@@ -198,24 +217,33 @@ document.getElementById("school-btn").addEventListener(
 document.getElementById("rest-btn").addEventListener(
   "click",
   function() {
+
+    // Save the current day
+    const currentDay = game.day;
+
     changeStat("energy", 40);
     changeStat("health", 10);
 
-    // Rest takes 8 hours
-    advanceTime(8);
-
-    // Begin the next day at 8:00 AM
-    game.day += 1;
+    // Rest is an 8-hour overnight action.
+    // We begin the next day at 8:00 AM.
+    game.day = currentDay + 1;
     game.time = 8;
 
     updateStats();
 
-    updateStatus("Maya rested and is ready for a new day!");
+    if (game.day > 7) {
+      endGame();
+      return;
+    }
+
+    updateStatus(
+      "Maya rested for 8 hours. A new day begins!"
+    );
   }
 );
 
 
-// OPEN THE WATER MENU
+// WATER MENU
 
 document.getElementById("water-btn").addEventListener(
   "click",
@@ -224,9 +252,6 @@ document.getElementById("water-btn").addEventListener(
       .classList.remove("hidden");
   }
 );
-
-
-// CLOSE THE WATER MENU
 
 document.getElementById("cancel-water-btn").addEventListener(
   "click",
@@ -237,71 +262,71 @@ document.getElementById("cancel-water-btn").addEventListener(
 );
 
 
-// CREATE A WATER COLLECTION FUNCTION
+// COLLECT WATER
 
 function collectWater(source, travelTime, sicknessChance) {
 
-  // Increase hydration
+  // Remember which day the water was collected
+  const collectionDay = game.day;
+
   changeStat("hydration", 30);
 
-  // Track total hours spent collecting water
   game.waterHours += travelTime;
 
-  // Advance the game clock
-  advanceTime(travelTime);
-
-  // Close the water menu
   document.getElementById("water-modal")
     .classList.add("hidden");
 
-  // Determine if Maya gets sick
-  let randomNumber = Math.random();
+  updateStatus(
+    "Maya collected water from the " + source + "."
+  );
+
+  // Random chance of sickness
+  const randomNumber = Math.random();
 
   if (randomNumber < sicknessChance) {
     changeStat("health", -15);
     changeStat("energy", -20);
     changeStat("mood", -10);
 
-    game.sickDays += 1;
+    // Count each sick day only once
+    if (!game.daysSick.includes(collectionDay)) {
+      game.daysSick.push(collectionDay);
+      game.sickDays += 1;
+    }
 
     showEvent(
       "Maya isn't feeling well. The water from the " +
       source + " may have made her sick.",
       "Health -15, Energy -20, Mood -10"
     );
-
-  } else {
-    updateStatus(
-      "Maya collected water from the " + source + "."
-    );
   }
+
+  advanceTime(travelTime);
 }
 
 
-// MAKE THE RIVER BUTTON WORK
+// WATER SOURCE BUTTONS
 
 document.getElementById("river-btn").addEventListener(
   "click",
   function() {
+    // 60% chance of sickness
     collectWater("river", 2, 0.60);
   }
 );
 
-
-// MAKE THE PUBLIC PUMP BUTTON WORK
-
 document.getElementById("pump-btn").addEventListener(
   "click",
   function() {
+    // 10% chance of sickness
     collectWater("public pump", 0.75, 0.10);
   }
 );
 
 
-// DISPLAY AN EVENT POP-UP
+// EVENT POP-UP
 
 function showEvent(message, effects) {
-
   document.getElementById("event-text").textContent =
     message;
 
@@ -312,15 +337,38 @@ function showEvent(message, effects) {
     .classList.remove("hidden");
 }
 
-
-// CLOSE THE EVENT POP-UP
-
 document.getElementById("event-continue-btn").addEventListener(
   "click",
   function() {
     document.getElementById("event-modal")
       .classList.add("hidden");
-
-    updateStats();
   }
 );
+
+
+// END THE GAME
+
+function endGame() {
+
+  // Close any open event or water pop-ups
+  document.getElementById("event-modal")
+    .classList.add("hidden");
+
+  document.getElementById("water-modal")
+    .classList.add("hidden");
+
+  // Display the player's results
+  document.getElementById("result-classes").textContent =
+    game.classesAttended + " / 5";
+
+  document.getElementById("result-water-hours").textContent =
+    Math.round(game.waterHours * 100) / 100;
+
+  document.getElementById("result-sick-days").textContent =
+    game.sickDays;
+
+  document.getElementById("result-school").textContent =
+    game.schoolProgress + "%";
+
+  showScreen("results-screen");
+}
