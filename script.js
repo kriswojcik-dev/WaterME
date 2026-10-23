@@ -17,8 +17,9 @@ let game = {
   waterHours: 0,
   sickDays: 0,
 
-  lastSchoolDay: 0,
-  daysSick: []
+lastSchoolDay: 0,
+daysSick: [],
+mealsToday: 0
 };
 
 
@@ -133,10 +134,11 @@ function advanceTime(hours) {
   // Advance the clock
   game.time += hours;
 
-  while (game.time >= 24) {
-    game.time -= 24;
-    game.day += 1;
-  }
+while (game.time >= 24) {
+  game.time -= 24;
+  game.day += 1;
+  game.mealsToday = 0;
+}
 
   updateStats();
 
@@ -177,19 +179,34 @@ document.getElementById("got-it-btn").addEventListener(
 );
 
 
+
 // EAT BUTTON
 
 document.getElementById("eat-btn").addEventListener(
   "click",
   function() {
+
+    // Maya can eat a maximum of 3 times per day
+    if (game.mealsToday >= 3) {
+      updateStatus("Maya has already eaten 3 meals today!");
+      return;
+    }
+
+    // Increase meal counter
+    game.mealsToday += 1;
+
     changeStat("health", 5);
     changeStat("energy", 10);
 
-    updateStatus("Maya ate a meal and feels better!");
+    updateStatus(
+      "Maya ate a meal! Meals today: " +
+      game.mealsToday + "/3"
+    );
 
     advanceTime(0.5);
   }
 );
+
 
 
 // SCHOOL BUTTON
@@ -257,6 +274,7 @@ document.getElementById("rest-btn").addEventListener(
     // We begin the next day at 8:00 AM.
     game.day = currentDay + 1;
     game.time = 8;
+    game.mealsToday = 0;
 
     updateStats();
 

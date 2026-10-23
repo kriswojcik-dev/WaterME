@@ -366,3 +366,26 @@ h1, h2 {
   background: #FFF7E1;
   border-color: #77A8BB;
 }
+
+
+/* FINAL SCREEN BUTTONS */
+
+.final-actions .button-link,
+.final-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #FFC907;
+  color: #1A1A1A;
+
+  min-height: 58px;
+  padding: 0.8rem 1rem;
+  text-align: center;
+}
+
+.final-actions .button-link:hover,
+.final-actions button:hover {
+  background-color: #E8B700;
+}
+
