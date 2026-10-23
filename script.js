@@ -79,6 +79,21 @@ function updateStats() {
 
   document.getElementById("period-display").textContent =
     period;
+
+    
+// Change Maya's message based on her health
+const characterMessage =
+  document.getElementById("character-message");
+
+if (game.health < 30) {
+  characterMessage.textContent = "I'm feeling really sick...";
+} else if (game.hydration < 20) {
+  characterMessage.textContent = "I'm so thirsty...";
+} else if (game.energy < 20) {
+  characterMessage.textContent = "I'm exhausted...";
+} else {
+  characterMessage.textContent = "Feeling okay!";
+}
 }
 
 
@@ -99,9 +114,6 @@ function updateStatus(message) {
   document.getElementById("status-message").textContent =
     message;
 }
-
-
-// ADVANCE TIME
 
 
  // ADVANCE TIME
@@ -204,13 +216,19 @@ document.getElementById("school-btn").addEventListener(
       return;
     }
 
-    // Maya needs enough energy and hydration
-    if (game.energy < 20 || game.hydration < 20) {
-      updateStatus(
-        "Maya is too tired or thirsty to attend school!"
-      );
-      return;
-    }
+   
+// Maya needs enough energy, hydration, and health
+if (
+  game.energy < 20 ||
+  game.hydration < 20 ||
+  game.health < 30
+) {
+  updateStatus(
+    "Maya is not healthy enough to attend school!"
+  );
+  return;
+}
+
 
     game.lastSchoolDay = game.day;
     game.classesAttended += 1;
