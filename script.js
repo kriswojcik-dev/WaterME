@@ -3,24 +3,28 @@
 
 // GAME VARIABLES
 
-let game = {
-  day: 1,
-  time: 8,
+function createNewGame() {
+  return {
+    day: 1,
+    time: 8,
 
-  hydration: 70,
-  health: 80,
-  energy: 60,
-  mood: 70,
-  schoolProgress: 10,
+    hydration: 70,
+    health: 80,
+    energy: 60,
+    mood: 70,
+    schoolProgress: 10,
 
-  classesAttended: 0,
-  waterHours: 0,
-  sickDays: 0,
+    classesAttended: 0,
+    waterHours: 0,
+    sickDays: 0,
 
-lastSchoolDay: 0,
-daysSick: [],
-mealsToday: 0
-};
+    lastSchoolDay: 0,
+    daysSick: [],
+    mealsToday: 0
+  };
+}
+
+let game = createNewGame();
 
 
 // CHANGE SCREENS
@@ -43,7 +47,7 @@ function updateStats() {
 
   stats.forEach(function(stat) {
     document.getElementById(stat + "-value").textContent =
-      game[stat] + "%";
+      Math.round(game[stat]) + "%";
 
     document.getElementById(stat + "-bar").value =
       game[stat];
@@ -58,6 +62,7 @@ function updateStats() {
   document.getElementById("day-display").textContent =
     Math.min(game.day, 7);
 
+  // Update clock
   const hours = Math.floor(game.time);
   const minutes = Math.round((game.time - hours) * 60);
   const displayHour = hours % 12 || 12;
@@ -68,6 +73,7 @@ function updateStats() {
     String(minutes).padStart(2, "0") +
     " " + ampm;
 
+  // Update time of day
   let period = "Morning";
 
   if (game.time >= 12 && game.time < 17) {
@@ -81,20 +87,19 @@ function updateStats() {
   document.getElementById("period-display").textContent =
     period;
 
+  // Update Maya's message
+  const characterMessage =
+    document.getElementById("character-message");
 
-// Change Maya's message based on her health
-const characterMessage =
-  document.getElementById("character-message");
-
-if (game.health < 30) {
-  characterMessage.textContent = "I'm feeling really sick...";
-} else if (game.hydration < 20) {
-  characterMessage.textContent = "I'm so thirsty...";
-} else if (game.energy < 20) {
-  characterMessage.textContent = "I'm exhausted...";
-} else {
-  characterMessage.textContent = "Feeling okay!";
-}
+  if (game.health < 30) {
+    characterMessage.textContent = "I'm feeling really sick...";
+  } else if (game.hydration < 20) {
+    characterMessage.textContent = "I'm so thirsty...";
+  } else if (game.energy < 20) {
+    characterMessage.textContent = "I'm exhausted...";
+  } else {
+    characterMessage.textContent = "Feeling okay!";
+  }
 }
 
 
@@ -103,6 +108,7 @@ if (game.health < 30) {
 function changeStat(stat, amount) {
   game[stat] += amount;
 
+  // Keep values between 0 and 100
   game[stat] = Math.max(0, Math.min(100, game[stat]));
 
   updateStats();
@@ -117,15 +123,15 @@ function updateStatus(message) {
 }
 
 
- // ADVANCE TIME
+// ADVANCE TIME
 
 function advanceTime(hours) {
 
-  // Maya gets thirstier and more tired over time
+  // Maya becomes thirstier and more tired over time
   changeStat("hydration", -3 * hours);
   changeStat("energy", -2 * hours);
 
-  // Low hydration affects health
+  // Low hydration reduces health
   if (game.hydration < 20) {
     changeStat("health", -5);
     updateStatus("Maya is dehydrated and losing health!");
@@ -134,19 +140,20 @@ function advanceTime(hours) {
   // Advance the clock
   game.time += hours;
 
-while (game.time >= 24) {
-  game.time -= 24;
-  game.day += 1;
-  game.mealsToday = 0;
-}
+  // Begin a new day after midnight
+  while (game.time >= 24) {
+    game.time -= 24;
+    game.day += 1;
+    game.mealsToday = 0;
+  }
 
   updateStats();
 
+  // End the game after Day 7
   if (game.day > 7) {
     endGame();
   }
 }
-
 
 
 // START GAME
@@ -179,20 +186,18 @@ document.getElementById("got-it-btn").addEventListener(
 );
 
 
-
 // EAT BUTTON
 
 document.getElementById("eat-btn").addEventListener(
   "click",
   function() {
 
-    // Maya can eat a maximum of 3 times per day
+    // Maya can eat only 3 times each day
     if (game.mealsToday >= 3) {
       updateStatus("Maya has already eaten 3 meals today!");
       return;
     }
 
-    // Increase meal counter
     game.mealsToday += 1;
 
     changeStat("health", 5);
@@ -208,14 +213,11 @@ document.getElementById("eat-btn").addEventListener(
 );
 
 
-
 // SCHOOL BUTTON
 
 document.getElementById("school-btn").addEventListener(
   "click",
   function() {
-    // Check if Maya is ready for school
-
 
     // School can only happen once per day
     if (game.lastSchoolDay === game.day) {
@@ -229,19 +231,17 @@ document.getElementById("school-btn").addEventListener(
       return;
     }
 
-   
-// Maya needs enough energy, hydration, and health
-if (
-  game.energy < 20 ||
-  game.hydration < 20 ||
-  game.health < 30
-) {
-  updateStatus(
-    "Maya is not healthy enough to attend school!"
-  );
-  return;
-}
-
+    // Maya must be healthy enough to attend
+    if (
+      game.energy < 20 ||
+      game.hydration < 20 ||
+      game.health < 30
+    ) {
+      updateStatus(
+        "Maya is not healthy enough to attend school!"
+      );
+      return;
+    }
 
     game.lastSchoolDay = game.day;
     game.classesAttended += 1;
@@ -253,6 +253,7 @@ if (
 
     updateStatus("Maya made it to class today!");
 
+    // School lasts 8 hours
     advanceTime(8);
   }
 );
@@ -264,15 +265,15 @@ document.getElementById("rest-btn").addEventListener(
   "click",
   function() {
 
-    // Save the current day
-    const currentDay = game.day;
-
+    // Restore energy and health
     changeStat("energy", 40);
     changeStat("health", 10);
 
-    // Rest is an 8-hour overnight action.
-    // We begin the next day at 8:00 AM.
-    game.day = currentDay + 1;
+    // Hydration decreases during overnight sleep
+    changeStat("hydration", -24);
+
+    // Rest begins the following morning
+    game.day += 1;
     game.time = 8;
     game.mealsToday = 0;
 
@@ -284,7 +285,7 @@ document.getElementById("rest-btn").addEventListener(
     }
 
     updateStatus(
-      "Maya rested for 8 hours. A new day begins!"
+      "Maya rested overnight and is ready for a new day!"
     );
   }
 );
@@ -318,8 +319,10 @@ function collectWater(source, travelTime, sicknessChance) {
 
   changeStat("hydration", 30);
 
+  // Track total hours spent collecting water
   game.waterHours += travelTime;
 
+  // Close the water menu
   document.getElementById("water-modal")
     .classList.add("hidden");
 
@@ -334,6 +337,8 @@ function collectWater(source, travelTime, sicknessChance) {
     changeStat("health", -15);
     changeStat("energy", -20);
     changeStat("mood", -10);
+
+    // Sickness also reduces school progress
     changeStat("schoolProgress", -5);
 
     // Count each sick day only once
@@ -398,36 +403,48 @@ document.getElementById("event-continue-btn").addEventListener(
 
 function endGame() {
 
-  // Close any open event or water pop-ups
+  // Close any open pop-ups
   document.getElementById("event-modal")
     .classList.add("hidden");
 
   document.getElementById("water-modal")
     .classList.add("hidden");
 
-  // Display the player's results
+  // Show classes attended
   document.getElementById("result-classes").textContent =
     game.classesAttended + " / 7";
 
+  // Show water collection time
   document.getElementById("result-water-hours").textContent =
     Math.round(game.waterHours * 100) / 100;
 
+  // Show number of sick days
   document.getElementById("result-sick-days").textContent =
     game.sickDays;
 
+  // Show final school progress
   document.getElementById("result-school").textContent =
     game.schoolProgress + "%";
 
+  // Display win or loss message
+  const resultMessage =
+    document.getElementById("result-message");
+
+  if (game.schoolProgress === 100) {
+    resultMessage.textContent =
+      "You Win! Maya reached 100% school progress!";
+  } else {
+    resultMessage.textContent =
+      "Keep Trying! Can you reach 100% next time?";
+  }
+
   showScreen("results-screen");
 
-
-// Celebrate if Maya reaches 100% school progress
-if (game.schoolProgress === 100) {
-  celebrateWin();
+  // Celebrate only when school progress reaches 100%
+  if (game.schoolProgress === 100) {
+    celebrateWin();
+  }
 }
-
-}
-
 
 
 // RESULTS AND COMPARISON SCREEN
@@ -435,6 +452,7 @@ if (game.schoolProgress === 100) {
 document.getElementById("results-continue-btn").addEventListener(
   "click",
   function() {
+
     document.getElementById("compare-water-time").textContent =
       (Math.round(game.waterHours * 100) / 100) + " hrs";
 
@@ -452,24 +470,23 @@ document.getElementById("results-continue-btn").addEventListener(
 // RESET THE GAME
 
 function resetGame() {
-  game = {
-    day: 1,
-    time: 8,
 
-    hydration: 70,
-    health: 80,
-    energy: 60,
-    mood: 70,
-    schoolProgress: 10,
-    mealsToday: 0,
+  // Remove any remaining confetti
+  document.querySelectorAll(".confetti").forEach(
+    function(piece) {
+      piece.remove();
+    }
+  );
 
-    classesAttended: 0,
-    waterHours: 0,
-    sickDays: 0,
+  // Reset all game variables
+  game = createNewGame();
 
-    lastSchoolDay: 0,
-    daysSick: []
-  };
+  // Close any open pop-ups
+  document.querySelectorAll(".modal").forEach(
+    function(modal) {
+      modal.classList.add("hidden");
+    }
+  );
 
   updateStats();
   updateStatus("Maya is feeling okay.");
@@ -493,6 +510,7 @@ document.getElementById("play-again-btn").addEventListener(
 document.getElementById("reset-btn").addEventListener(
   "click",
   function() {
+
     const confirmReset = confirm(
       "Are you sure you want to restart the game?"
     );
@@ -507,6 +525,7 @@ document.getElementById("reset-btn").addEventListener(
 // CONFETTI CELEBRATION
 
 function celebrateWin() {
+
   const colors = [
     "#FFC907",
     "#003366",
@@ -517,23 +536,26 @@ function celebrateWin() {
 
   // Create 60 pieces of confetti
   for (let i = 0; i < 60; i++) {
+
     const confetti = document.createElement("div");
 
     confetti.classList.add("confetti");
 
-    // Give each piece a random position and color
-    confetti.style.left = Math.random() * 100 + "vw";
+    // Random horizontal position
+    confetti.style.left =
+      Math.random() * 100 + "vw";
 
+    // Random confetti color
     confetti.style.backgroundColor =
       colors[Math.floor(Math.random() * colors.length)];
 
-    // Vary the falling speed
+    // Random falling speed
     confetti.style.animationDuration =
       (2 + Math.random() * 3) + "s";
 
     document.body.appendChild(confetti);
 
-    // Remove each piece after its animation finishes
+    // Remove confetti when animation finishes
     confetti.addEventListener("animationend", function() {
       confetti.remove();
     });

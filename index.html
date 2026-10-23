@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +9,7 @@
 </head>
 <body>
   <main class="app-shell">
+
     <!-- START SCREEN -->
     <section id="start-screen" class="screen active" aria-labelledby="game-title">
       <h1 id="game-title">Water Me</h1>
@@ -31,6 +33,7 @@
     <section id="game-screen" class="screen" aria-labelledby="game-heading">
       <header class="game-header">
         <h1 id="game-heading">Water Me</h1>
+
         <div class="clock-area">
           <span>Day <strong id="day-display">1</strong></span>
           <span id="time-display">8:00 AM</span>
@@ -42,34 +45,51 @@
       <div class="character-panel">
         <div id="character-avatar" class="avatar" aria-live="polite">(^‿^)<br>/|\</div>
         <h3>Maya</h3>
-        <p id="character-message">“Feeling okay!”</p>
+        <p id="character-message">Feeling okay!</p>
       </div>
 
       <div class="stats" aria-label="Maya's stats">
+
         <div class="stat-row">
-          <div class="stat-label"><span>Hydration</span><span id="hydration-value">70%</span></div>
+          <div class="stat-label">
+            <span>Hydration</span>
+            <span id="hydration-value">70%</span>
+          </div>
           <progress id="hydration-bar" max="100" value="70">70%</progress>
         </div>
 
         <div class="stat-row">
-          <div class="stat-label"><span>Health</span><span id="health-value">80%</span></div>
+          <div class="stat-label">
+            <span>Health</span>
+            <span id="health-value">80%</span>
+          </div>
           <progress id="health-bar" max="100" value="80">80%</progress>
         </div>
 
         <div class="stat-row">
-          <div class="stat-label"><span>Energy</span><span id="energy-value">60%</span></div>
+          <div class="stat-label">
+            <span>Energy</span>
+            <span id="energy-value">60%</span>
+          </div>
           <progress id="energy-bar" max="100" value="60">60%</progress>
         </div>
 
         <div class="stat-row">
-          <div class="stat-label"><span>Mood</span><span id="mood-value">70%</span></div>
+          <div class="stat-label">
+            <span>Mood</span>
+            <span id="mood-value">70%</span>
+          </div>
           <progress id="mood-bar" max="100" value="70">70%</progress>
         </div>
 
         <div class="stat-row school-score">
-          <div class="stat-label"><span>School Progress</span><span id="school-value">10%</span></div>
+          <div class="stat-label">
+            <span>School Progress</span>
+            <span id="school-value">10%</span>
+          </div>
           <progress id="school-bar" max="100" value="10">10%</progress>
         </div>
+
       </div>
 
       <div class="action-grid">
@@ -78,12 +98,14 @@
         <button id="school-btn">🎓 School</button>
         <button id="rest-btn">🛏 Rest</button>
       </div>
+
       <button id="reset-btn" class="secondary-btn">
-  ↻ Reset Game
-</button>
+        ↻ Reset Game
+      </button>
 
       <div class="status-box" role="status">
-        <strong>Status:</strong> <span id="status-message">Maya is feeling okay.</span>
+        <strong>Status:</strong>
+        <span id="status-message">Maya is feeling okay.</span>
       </div>
 
       <p class="brand-placeholder">charity: water</p>
@@ -93,17 +115,37 @@
     <section id="results-screen" class="screen" aria-labelledby="results-heading">
       <h1>Water Me</h1>
       <h2 id="results-heading">Week Complete</h2>
+
       <div class="avatar large">(^‿^)<br>/|\</div>
-      <h3>Your Results</h3>
+
+      <h3 id="result-message">Your Results</h3>
 
       <dl class="results-list">
-        <div><dt>Classes Attended</dt><dd id="result-classes">0 / 7</dd></div>
-        <div><dt>Hours Getting Water</dt><dd id="result-water-hours">0</dd></div>
-        <div><dt>Sick Days</dt><dd id="result-sick-days">0</dd></div>
-        <div><dt>School Progress</dt><dd id="result-school">0%</dd></div>
+        <div>
+          <dt>Classes Attended</dt>
+          <dd id="result-classes">0 / 7</dd>
+        </div>
+
+        <div>
+          <dt>Hours Getting Water</dt>
+          <dd id="result-water-hours">0</dd>
+        </div>
+
+        <div>
+          <dt>Sick Days</dt>
+          <dd id="result-sick-days">0</dd>
+        </div>
+
+        <div>
+          <dt>School Progress</dt>
+          <dd id="result-school">0%</dd>
+        </div>
       </dl>
 
-      <button id="results-continue-btn" class="primary-btn">Continue</button>
+      <button id="results-continue-btn" class="primary-btn">
+        Continue
+      </button>
+
       <p class="brand-placeholder">charity: water</p>
     </section>
 
@@ -113,38 +155,71 @@
       <h2 id="comparison-heading">What If Water Were Closer?</h2>
 
       <div class="comparison-table">
+
         <div class="comparison-row header-row">
-          <span></span><strong>Before</strong><strong>Clean Water</strong>
+          <span></span>
+          <strong>Before</strong>
+          <strong>Clean Water</strong>
         </div>
+
         <div class="comparison-row">
-          <span>Water Time</span><span id="compare-water-time">0 hrs</span><span>1 hr</span>
+          <span>Water Time</span>
+          <span id="compare-water-time">0 hrs</span>
+          <span>1 hr</span>
         </div>
+
         <div class="comparison-row">
-          <span>Sick Days</span><span id="compare-sick-days">0</span><span>0</span>
+          <span>Sick Days</span>
+          <span id="compare-sick-days">0</span>
+          <span>0</span>
         </div>
+
         <div class="comparison-row">
-          <span>Classes</span><span id="compare-classes">0/7</span><span>7/7</span>
+          <span>Classes</span>
+          <span id="compare-classes">0/7</span>
+          <span>7/7</span>
         </div>
+
       </div>
 
-      <p class="final-message">Clean water affects more than thirst.</p>
+      <p class="comparison-note">
+        This is an illustrative scenario showing how access
+        to clean water could improve Maya's daily life.
+      </p>
+
+      <p class="final-message">
+        Clean water affects more than thirst.
+      </p>
+
       <p>Learn more about charity: water.</p>
 
       <div class="action-grid final-actions">
-        <a class="button-link" href="https://www.charitywater.org/" target="_blank" rel="noopener noreferrer">Learn More</a>
+        <a
+          class="button-link"
+          href="https://www.charitywater.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn More
+        </a>
+
         <button id="play-again-btn">Play Again</button>
       </div>
 
       <p class="brand-placeholder">charity: water</p>
     </section>
+
   </main>
 
   <!-- HOW TO PLAY MODAL -->
   <div id="how-to-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="how-to-heading">
     <div class="modal-card">
       <h2 id="how-to-heading">How to Play</h2>
+
       <p>Keep Maya healthy for 7 days.</p>
+
       <p><strong>Monitor:</strong></p>
+
       <ul>
         <li>Hydration</li>
         <li>Health</li>
@@ -152,8 +227,27 @@
         <li>Mood</li>
         <li>School Progress</li>
       </ul>
+
       <p>Choose actions carefully. Every action takes time.</p>
-      <p><strong>School</strong> takes 8 hours. <strong>Rest</strong> takes 8 hours and begins a new day.</p>
+
+      <p>
+        <strong>School</strong> takes 8 hours and can be
+        attended once per day.
+      </p>
+
+      <p>
+        <strong>Eat</strong> up to 3 meals each day.
+      </p>
+
+      <p>
+        <strong>Rest</strong> restores energy and health
+        and begins the next morning.
+      </p>
+
+      <p>
+        Reach 100% school progress by the end of Day 7 to win!
+      </p>
+
       <button id="got-it-btn" class="primary-btn">Got It</button>
     </div>
   </div>
@@ -161,6 +255,7 @@
   <!-- WATER MODAL -->
   <div id="water-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="water-heading">
     <div class="modal-card wide-card">
+
       <h2 id="water-heading">Choose Water</h2>
 
       <div class="water-option">
@@ -170,6 +265,7 @@
           <p>Travel Time: 2 hours</p>
           <p>Water Quality: Unknown</p>
         </div>
+
         <button id="river-btn">Select</button>
       </div>
 
@@ -180,6 +276,7 @@
           <p>Travel Time: 45 minutes</p>
           <p>Water Quality: Moderate</p>
         </div>
+
         <button id="pump-btn">Select</button>
       </div>
 
@@ -188,21 +285,33 @@
           <h3>Clean Water Point</h3>
           <p>Not yet available.</p>
         </div>
+
         <button disabled>Locked</button>
       </div>
 
-      <button id="cancel-water-btn" class="secondary-btn">Cancel</button>
+      <button id="cancel-water-btn" class="secondary-btn">
+        Cancel
+      </button>
+
     </div>
   </div>
 
   <!-- EVENT MODAL -->
   <div id="event-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="event-heading">
     <div class="modal-card">
+
       <h2 id="event-heading">Event</h2>
+
       <div id="event-avatar" class="avatar">(^‿^)<br>/|\</div>
+
       <p id="event-text">Something happened.</p>
+
       <div id="event-effects"></div>
-      <button id="event-continue-btn" class="primary-btn">Continue</button>
+
+      <button id="event-continue-btn" class="primary-btn">
+        Continue
+      </button>
+
     </div>
   </div>
 
