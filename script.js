@@ -80,7 +80,7 @@ function updateStats() {
   document.getElementById("period-display").textContent =
     period;
 
-    
+
 // Change Maya's message based on her health
 const characterMessage =
   document.getElementById("character-message");
@@ -197,12 +197,8 @@ document.getElementById("eat-btn").addEventListener(
 document.getElementById("school-btn").addEventListener(
   "click",
   function() {
+    // Check if Maya is ready for school
 
-    // No classes on Days 6 and 7
-    if (game.day > 5) {
-      updateStatus("There is no school on the weekend!");
-      return;
-    }
 
     // School can only happen once per day
     if (game.lastSchoolDay === game.day) {
@@ -392,7 +388,7 @@ function endGame() {
 
   // Display the player's results
   document.getElementById("result-classes").textContent =
-    game.classesAttended + " / 5";
+    game.classesAttended + " / 7";
 
   document.getElementById("result-water-hours").textContent =
     Math.round(game.waterHours * 100) / 100;
@@ -420,7 +416,7 @@ document.getElementById("results-continue-btn").addEventListener(
       game.sickDays;
 
     document.getElementById("compare-classes").textContent =
-      game.classesAttended + "/5";
+      game.classesAttended + "/7";
 
     showScreen("comparison-screen");
   }
