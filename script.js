@@ -1,7 +1,7 @@
 
  // WATER ME - GAME JAVASCRIPT
 
-// STEP 1: CREATE OUR GAME VARIABLES
+// CREATE GAME VARIABLES
 
 let game = {
   day: 1,
@@ -19,7 +19,7 @@ let game = {
 };
 
 
-// STEP 2: CREATE A FUNCTION TO CHANGE SCREENS
+// FUNCTION TO CHANGE SCREENS
 
 function showScreen(screenId) {
   // Find all sections with the class "screen"
@@ -35,7 +35,7 @@ function showScreen(screenId) {
 }
 
 
-// STEP 3: CREATE A FUNCTION TO UPDATE STATS
+// FUNCTION TO UPDATE STATS
 
 function updateStats() {
   const stats = [
@@ -91,7 +91,7 @@ function updateStats() {
 }
 
 
-// STEP 4: MAKE THE START BUTTON WORK
+// MAKE THE START BUTTON WORK
 
 document.getElementById("start-btn").addEventListener(
   "click",
@@ -102,7 +102,7 @@ document.getElementById("start-btn").addEventListener(
 );
 
 
-// STEP 5: MAKE HOW TO PLAY WORK
+// MAKE HOW TO PLAY WORK
 
 document.getElementById("how-to-btn").addEventListener(
   "click",
@@ -113,12 +113,103 @@ document.getElementById("how-to-btn").addEventListener(
 );
 
 
-// STEP 6: MAKE GOT IT WORK
+// MAKE GOT IT WORK
 
 document.getElementById("got-it-btn").addEventListener(
   "click",
   function() {
     document.getElementById("how-to-modal")
       .classList.add("hidden");
+  }
+);
+
+
+ // CHANGE STATS SAFELY
+
+function changeStat(stat, amount) {
+  game[stat] += amount;
+
+  // Keep stats between 0 and 100
+  game[stat] = Math.max(0, Math.min(100, game[stat]));
+
+  updateStats();
+}
+
+
+// UPDATE MAYA'S STATUS MESSAGE
+
+function updateStatus(message) {
+  document.getElementById("status-message").textContent =
+    message;
+}
+
+
+// ADVANCE GAME TIME
+
+function advanceTime(hours) {
+  game.time += hours;
+
+  // Convert time to a 24-hour clock
+  if (game.time >= 24) {
+    game.time = game.time % 24;
+    game.day += 1;
+  }
+
+  updateStats();
+}
+
+
+// EAT BUTTON
+
+document.getElementById("eat-btn").addEventListener(
+  "click",
+  function() {
+    changeStat("health", 5);
+    changeStat("energy", 10);
+
+    advanceTime(0.5);
+
+    updateStatus("Maya ate a meal and feels better!");
+  }
+);
+
+
+// SCHOOL BUTTON
+
+document.getElementById("school-btn").addEventListener(
+  "click",
+  function() {
+    changeStat("schoolProgress", 15);
+    changeStat("mood", 5);
+    changeStat("energy", -20);
+    changeStat("hydration", -20);
+
+    game.classesAttended += 1;
+
+    advanceTime(8);
+
+    updateStatus("Maya attended school today!");
+  }
+);
+
+
+// REST BUTTON
+
+document.getElementById("rest-btn").addEventListener(
+  "click",
+  function() {
+    changeStat("energy", 40);
+    changeStat("health", 10);
+
+    // Rest takes 8 hours
+    advanceTime(8);
+
+    // Begin the next day at 8:00 AM
+    game.day += 1;
+    game.time = 8;
+
+    updateStats();
+
+    updateStatus("Maya rested and is ready for a new day!");
   }
 );
