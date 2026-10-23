@@ -1,0 +1,335 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #e8e8e8;
+  color: #111;
+}
+
+button,
+.button-link {
+  font: inherit;
+}
+
+button,
+.button-link {
+  border: 1px solid #333;
+  background: #fff;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+button:hover,
+.button-link:hover {
+  background: #efefef;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.button-link {
+  color: #111;
+  text-decoration: none;
+  text-align: center;
+}
+
+.app-shell {
+  width: min(100%, 700px);
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #fff;
+  border-left: 1px solid #888;
+  border-right: 1px solid #888;
+}
+
+.screen {
+  display: none;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.screen.active {
+  display: block;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  text-transform: uppercase;
+}
+
+.subtitle {
+  margin-bottom: 2rem;
+}
+
+.avatar {
+  white-space: pre-line;
+  font-family: monospace;
+  font-size: 2.5rem;
+  line-height: 1.1;
+  margin: 1rem auto;
+}
+
+.avatar.large {
+  font-size: 3rem;
+  margin: 2rem auto;
+}
+
+.intro-copy {
+  max-width: 450px;
+  margin: 1rem auto 2rem;
+  line-height: 1.5;
+}
+
+.stacked-buttons {
+  display: grid;
+  gap: 1rem;
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+.brand-placeholder {
+  margin-top: 2.5rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  text-align: left;
+}
+
+.game-header h1 {
+  margin-bottom: 0;
+}
+
+.clock-area {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+#period-display {
+  margin: 1rem 0 2rem;
+  text-transform: uppercase;
+}
+
+.character-panel {
+  margin-bottom: 2rem;
+}
+
+.character-panel h3 {
+  margin-bottom: 0.5rem;
+}
+
+.stats {
+  max-width: 520px;
+  margin: 0 auto 2rem;
+}
+
+.stat-row {
+  margin-bottom: 0.9rem;
+}
+
+.stat-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+progress {
+  width: 100%;
+  height: 1.4rem;
+}
+
+.school-score {
+  margin-top: 1.5rem;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.action-grid button,
+.action-grid .button-link {
+  min-height: 58px;
+}
+
+.status-box {
+  max-width: 520px;
+  margin: 1.5rem auto 0;
+  padding: 1rem;
+  border: 1px solid #333;
+  text-align: left;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 20;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-card {
+  width: min(100%, 480px);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #f4f4f4;
+  border: 1px solid #333;
+  padding: 2rem;
+  text-align: center;
+}
+
+.wide-card {
+  width: min(100%, 600px);
+}
+
+.modal-card ul {
+  text-align: left;
+  display: inline-block;
+}
+
+.water-option {
+  border: 1px solid #555;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+}
+
+.water-option h3,
+.water-option p {
+  margin-bottom: 0.35rem;
+}
+
+.locked-option {
+  opacity: 0.7;
+}
+
+#event-effects {
+  display: grid;
+  gap: 0.35rem;
+  margin: 1.25rem 0;
+  font-weight: 700;
+}
+
+.results-list {
+  max-width: 420px;
+  margin: 2rem auto;
+}
+
+.results-list div {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #bbb;
+  padding: 0.7rem 0;
+  gap: 2rem;
+}
+
+.results-list dt {
+  text-align: left;
+}
+
+.results-list dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.comparison-table {
+  max-width: 520px;
+  margin: 2rem auto;
+  border: 1px solid #333;
+}
+
+.comparison-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.8rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.comparison-row:last-child {
+  border-bottom: 0;
+}
+
+.header-row {
+  background: #eee;
+}
+
+.final-message {
+  font-weight: 700;
+  margin-top: 2rem;
+}
+
+.final-actions {
+  margin-top: 2rem;
+}
+
+@media (max-width: 520px) {
+  .screen {
+    padding: 1.25rem;
+  }
+
+  .game-header {
+    display: block;
+    text-align: center;
+  }
+
+  .clock-area {
+    justify-content: space-between;
+    margin-top: 0.75rem;
+  }
+
+  .action-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .water-option {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .water-option button {
+    width: 100%;
+  }
+
+  .comparison-row {
+    font-size: 0.9rem;
+  }
+}
