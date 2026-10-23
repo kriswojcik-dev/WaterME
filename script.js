@@ -461,6 +461,7 @@ function resetGame() {
     energy: 60,
     mood: 70,
     schoolProgress: 10,
+    mealsToday: 0,
 
     classesAttended: 0,
     waterHours: 0,
