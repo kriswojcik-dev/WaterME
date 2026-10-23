@@ -372,3 +372,61 @@ function endGame() {
 
   showScreen("results-screen");
 }
+
+
+
+// RESULTS AND COMPARISON SCREEN
+
+document.getElementById("results-continue-btn").addEventListener(
+  "click",
+  function() {
+    document.getElementById("compare-water-time").textContent =
+      (Math.round(game.waterHours * 100) / 100) + " hrs";
+
+    document.getElementById("compare-sick-days").textContent =
+      game.sickDays;
+
+    document.getElementById("compare-classes").textContent =
+      game.classesAttended + "/5";
+
+    showScreen("comparison-screen");
+  }
+);
+
+
+// RESET THE GAME
+
+function resetGame() {
+  game = {
+    day: 1,
+    time: 8,
+
+    hydration: 70,
+    health: 80,
+    energy: 60,
+    mood: 70,
+    schoolProgress: 10,
+
+    classesAttended: 0,
+    waterHours: 0,
+    sickDays: 0,
+
+    lastSchoolDay: 0,
+    daysSick: []
+  };
+
+  updateStats();
+  updateStatus("Maya is feeling okay.");
+
+  showScreen("game-screen");
+}
+
+
+// PLAY AGAIN BUTTON
+
+document.getElementById("play-again-btn").addEventListener(
+  "click",
+  function() {
+    resetGame();
+  }
+);
