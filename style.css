@@ -333,3 +333,36 @@ progress {
     font-size: 0.9rem;
   }
 }
+
+
+/* CHARITY: WATER BRAND COLORS */
+
+body {
+  background: #FFF7E1;
+  color: #1A1A1A;
+}
+
+.app-shell {
+  background: #FFFFFF;
+  border-color: #77A8BB;
+}
+
+.primary-btn,
+#water-btn {
+  background: #FFC907;
+  color: #1A1A1A;
+}
+
+.primary-btn:hover,
+#water-btn:hover {
+  background: #E8B700;
+}
+
+h1, h2 {
+  color: #003366;
+}
+
+.status-box {
+  background: #FFF7E1;
+  border-color: #77A8BB;
+}
