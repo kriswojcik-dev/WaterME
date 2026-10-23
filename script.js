@@ -334,6 +334,7 @@ function collectWater(source, travelTime, sicknessChance) {
     changeStat("health", -15);
     changeStat("energy", -20);
     changeStat("mood", -10);
+    changeStat("schoolProgress", -5);
 
     // Count each sick day only once
     if (!game.daysSick.includes(collectionDay)) {
@@ -344,7 +345,7 @@ function collectWater(source, travelTime, sicknessChance) {
     showEvent(
       "Maya isn't feeling well. The water from the " +
       source + " may have made her sick.",
-      "Health -15, Energy -20, Mood -10"
+      "Health -15, Energy -20, Mood -10, School Progress -5"
     );
   }
 
@@ -418,6 +419,13 @@ function endGame() {
     game.schoolProgress + "%";
 
   showScreen("results-screen");
+
+
+// Celebrate if Maya reaches 100% school progress
+if (game.schoolProgress === 100) {
+  celebrateWin();
+}
+
 }
 
 
@@ -477,3 +485,56 @@ document.getElementById("play-again-btn").addEventListener(
     resetGame();
   }
 );
+
+
+// RESET BUTTON
+
+document.getElementById("reset-btn").addEventListener(
+  "click",
+  function() {
+    const confirmReset = confirm(
+      "Are you sure you want to restart the game?"
+    );
+
+    if (confirmReset) {
+      resetGame();
+    }
+  }
+);
+
+
+// CONFETTI CELEBRATION
+
+function celebrateWin() {
+  const colors = [
+    "#FFC907",
+    "#003366",
+    "#77A8BB",
+    "#FF7F50",
+    "#5AAD85"
+  ];
+
+  // Create 60 pieces of confetti
+  for (let i = 0; i < 60; i++) {
+    const confetti = document.createElement("div");
+
+    confetti.classList.add("confetti");
+
+    // Give each piece a random position and color
+    confetti.style.left = Math.random() * 100 + "vw";
+
+    confetti.style.backgroundColor =
+      colors[Math.floor(Math.random() * colors.length)];
+
+    // Vary the falling speed
+    confetti.style.animationDuration =
+      (2 + Math.random() * 3) + "s";
+
+    document.body.appendChild(confetti);
+
+    // Remove each piece after its animation finishes
+    confetti.addEventListener("animationend", function() {
+      confetti.remove();
+    });
+  }
+}

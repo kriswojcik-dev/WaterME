@@ -389,3 +389,52 @@ h1, h2 {
   background-color: #E8B700;
 }
 
+
+/* RESET BUTTON */
+
+#reset-btn {
+  display: block;
+  margin: 1.5rem auto;
+  background-color: #FFF7E1;
+  border: 1px solid #003366;
+  color: #003366;
+}
+
+#reset-btn:hover {
+  background-color: #FFC907;
+}
+
+
+/* CONFETTI CELEBRATION */
+
+.confetti {
+  position: fixed;
+  top: -20px;
+  width: 10px;
+  height: 15px;
+  pointer-events: none;
+  z-index: 100;
+
+  animation-name: confettiFall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti {
+    animation-duration: 0.01s !important;
+  }
+}
+
