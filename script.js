@@ -103,10 +103,24 @@ function updateStatus(message) {
 
 // ADVANCE TIME
 
+
+ // ADVANCE TIME
+
 function advanceTime(hours) {
+
+  // Maya gets thirstier and more tired over time
+  changeStat("hydration", -3 * hours);
+  changeStat("energy", -2 * hours);
+
+  // Low hydration affects health
+  if (game.hydration < 20) {
+    changeStat("health", -5);
+    updateStatus("Maya is dehydrated and losing health!");
+  }
+
+  // Advance the clock
   game.time += hours;
 
-  // Move to the next day after midnight
   while (game.time >= 24) {
     game.time -= 24;
     game.day += 1;
@@ -118,6 +132,7 @@ function advanceTime(hours) {
     endGame();
   }
 }
+
 
 
 // START GAME
