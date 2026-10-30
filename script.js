@@ -23,7 +23,8 @@ function createNewGame() {
     mealsToday: 0,
 
     pumpUnlocked: false,
-    cleanWaterUnlocked: false
+    cleanWaterUnlocked: false,
+    waterTrips: 0,
   };
 }
 
@@ -490,6 +491,7 @@ function collectWater(source, travelTime, sicknessChance) {
 
   // Track total time collecting water
   game.waterHours += travelTime;
+  game.waterTrips += 1;
 
   // Close water selection
   document.getElementById("water-modal")
@@ -701,12 +703,23 @@ function endGame() {
 
 // RESULTS AND COMPARISON SCREEN
 
+
+// RESULTS AND COMPARISON SCREEN
+
 document.getElementById("results-continue-btn").addEventListener(
   "click",
   function() {
 
+    // Calculate hypothetical clean water collection time
+    const cleanWaterHours = game.waterTrips * 0.25;
+
+    // Display actual water collection time
     document.getElementById("compare-water-time").textContent =
-      (Math.round(game.waterHours * 100) / 100) + " hrs";
+      game.waterHours.toFixed(2) + " hrs";
+
+    // Display hypothetical clean water collection time
+    document.getElementById("compare-clean-water-time").textContent =
+      cleanWaterHours.toFixed(2) + " hrs";
 
     document.getElementById("compare-sick-days").textContent =
       game.sickDays;
@@ -717,6 +730,7 @@ document.getElementById("results-continue-btn").addEventListener(
     showScreen("comparison-screen");
   }
 );
+
 
 
 // RESET THE GAME
