@@ -603,6 +603,11 @@ document.getElementById("results-continue-btn").addEventListener(
 
 function resetGame() {
 
+
+// RESET THE GAME
+
+function resetGame() {
+
   // Remove remaining confetti
   document.querySelectorAll(".confetti").forEach(
     function(piece) {
@@ -615,28 +620,38 @@ function resetGame() {
   pendingWaterTime = 0;
   gameEnded = false;
 
-  // Close open modals and clear event feedback
+  // Close open modals
   document.querySelectorAll(".modal").forEach(
     function(modal) {
       modal.classList.add("hidden");
     }
   );
 
+  // Clear previous event feedback
   document.getElementById("event-effects")
     .replaceChildren();
 
+  // Reset difficulty to Normal
+  difficulty = "normal";
+
+  document.getElementById("difficulty-select").value =
+    "normal";
+
+  document.getElementById("difficulty-description")
+    .textContent =
+    "Balanced gameplay with moderate challenges.";
+
+  document.getElementById("difficulty-display")
+    .textContent = "Difficulty: Normal";
+
+  // Reset Maya's stats and status
   updateStats();
   updateStatus("Maya is feeling okay.");
 
-  // Keep the selected difficulty for the new game
-  document.getElementById("difficulty-display")
-    .textContent =
-    "Difficulty: " +
-    difficulty.charAt(0).toUpperCase() +
-    difficulty.slice(1);
-
-  showScreen("game-screen");
+  // Return to the difficulty selection screen
+  showScreen("start-screen");
 }
+
 
 
 // PLAY AGAIN BUTTON
