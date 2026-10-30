@@ -26,6 +26,9 @@ function createNewGame() {
 
 let game = createNewGame();
 
+// Tracks time that should advance after an event
+let pendingWaterTime = 0;
+
 
 // CHANGE SCREENS
 
@@ -108,7 +111,6 @@ function updateStats() {
 function changeStat(stat, amount) {
   game[stat] += amount;
 
-  // Keep values between 0 and 100
   game[stat] = Math.max(0, Math.min(100, game[stat]));
 
   updateStats();
@@ -137,7 +139,6 @@ function advanceTime(hours) {
     updateStatus("Maya is dehydrated and losing health!");
   }
 
-  // Advance the clock
   game.time += hours;
 
   // Begin a new day after midnight
@@ -149,7 +150,6 @@ function advanceTime(hours) {
 
   updateStats();
 
-  // End the game after Day 7
   if (game.day > 7) {
     endGame();
   }
@@ -192,7 +192,7 @@ document.getElementById("eat-btn").addEventListener(
   "click",
   function() {
 
-    // Maya can eat only 3 times each day
+    // Maya can eat only 3 times per day
     if (game.mealsToday >= 3) {
       updateStatus("Maya has already eaten 3 meals today!");
       return;
@@ -253,7 +253,6 @@ document.getElementById("school-btn").addEventListener(
 
     updateStatus("Maya made it to class today!");
 
-    // School lasts 8 hours
     advanceTime(8);
   }
 );
@@ -265,14 +264,13 @@ document.getElementById("rest-btn").addEventListener(
   "click",
   function() {
 
-    // Restore energy and health
     changeStat("energy", 40);
     changeStat("health", 10);
 
     // Hydration decreases during overnight sleep
     changeStat("hydration", -24);
 
-    // Rest begins the following morning
+    // Rest begins the next morning
     game.day += 1;
     game.time = 8;
     game.mealsToday = 0;
@@ -314,31 +312,29 @@ document.getElementById("cancel-water-btn").addEventListener(
 
 function collectWater(source, travelTime, sicknessChance) {
 
-  // Remember which day the water was collected
   const collectionDay = game.day;
 
+  // Increase hydration immediately
   changeStat("hydration", 30);
 
-  // Track total hours spent collecting water
+  // Track how much time Maya spent collecting water
   game.waterHours += travelTime;
 
-  // Close the water menu
+  // Save travel time until the player clicks Continue
+  pendingWaterTime = travelTime;
+
+  // Close water selection menu
   document.getElementById("water-modal")
     .classList.add("hidden");
 
-  updateStatus(
-    "Maya collected water from the " + source + "."
-  );
-
-  // Random chance of sickness
+  // Determine if the water makes Maya sick
   const randomNumber = Math.random();
 
   if (randomNumber < sicknessChance) {
+
     changeStat("health", -15);
     changeStat("energy", -20);
     changeStat("mood", -10);
-
-    // Sickness also reduces school progress
     changeStat("schoolProgress", -5);
 
     // Count each sick day only once
@@ -347,14 +343,37 @@ function collectWater(source, travelTime, sicknessChance) {
       game.sickDays += 1;
     }
 
+    updateStatus(
+      "Maya became sick after drinking water from the " +
+      source + "."
+    );
+
     showEvent(
-      "Maya isn't feeling well. The water from the " +
-      source + " may have made her sick.",
-      "Health -15, Energy -20, Mood -10, School Progress -5"
+      "Maya Isn't Feeling Well!",
+      "Maya collected water from the " + source +
+      ", but the water may have made her sick.",
+      "Hydration +30, Health -15, Energy -20, " +
+      "Mood -10, School Progress -5"
+    );
+
+  } else {
+
+    // Show positive feedback when Maya does not get sick
+    updateStatus(
+      "Maya successfully collected water from the " +
+      source + "!"
+    );
+
+    showEvent(
+      "Water Collected Successfully!",
+      "Maya collected water from the " + source +
+      " without getting sick!",
+      "Hydration +30"
     );
   }
 
-  advanceTime(travelTime);
+  // Time does not advance here.
+  // It advances when the player closes the event popup.
 }
 
 
@@ -377,24 +396,48 @@ document.getElementById("pump-btn").addEventListener(
 );
 
 
-// EVENT POP-UP
+// EVENT POPUP
 
-function showEvent(message, effects) {
+function showEvent(title, message, effects) {
+
+  // Update popup heading
+  document.getElementById("event-heading").textContent =
+    title;
+
+  // Update popup message
   document.getElementById("event-text").textContent =
     message;
 
+  // Update stat changes
   document.getElementById("event-effects").textContent =
     effects;
 
+  // Display the popup
   document.getElementById("event-modal")
     .classList.remove("hidden");
 }
 
+
+// EVENT CONTINUE BUTTON
+
 document.getElementById("event-continue-btn").addEventListener(
   "click",
   function() {
+
+    // Close the event popup
     document.getElementById("event-modal")
       .classList.add("hidden");
+
+    // Advance time only after the player acknowledges the event
+    if (pendingWaterTime > 0) {
+
+      const hours = pendingWaterTime;
+
+      // Clear pending time to prevent duplicate advancement
+      pendingWaterTime = 0;
+
+      advanceTime(hours);
+    }
   }
 );
 
@@ -403,12 +446,14 @@ document.getElementById("event-continue-btn").addEventListener(
 
 function endGame() {
 
-  // Close any open pop-ups
+  // Close any open popups
   document.getElementById("event-modal")
     .classList.add("hidden");
 
   document.getElementById("water-modal")
     .classList.add("hidden");
+
+  pendingWaterTime = 0;
 
   // Show classes attended
   document.getElementById("result-classes").textContent =
@@ -426,7 +471,6 @@ function endGame() {
   document.getElementById("result-school").textContent =
     game.schoolProgress + "%";
 
-  // Display win or loss message
   const resultMessage =
     document.getElementById("result-message");
 
@@ -440,7 +484,7 @@ function endGame() {
 
   showScreen("results-screen");
 
-  // Celebrate only when school progress reaches 100%
+  // Celebrate only when school progress is 100%
   if (game.schoolProgress === 100) {
     celebrateWin();
   }
@@ -481,7 +525,10 @@ function resetGame() {
   // Reset all game variables
   game = createNewGame();
 
-  // Close any open pop-ups
+  // Clear any unfinished water event
+  pendingWaterTime = 0;
+
+  // Close all popups
   document.querySelectorAll(".modal").forEach(
     function(modal) {
       modal.classList.add("hidden");
@@ -541,21 +588,17 @@ function celebrateWin() {
 
     confetti.classList.add("confetti");
 
-    // Random horizontal position
     confetti.style.left =
       Math.random() * 100 + "vw";
 
-    // Random confetti color
     confetti.style.backgroundColor =
       colors[Math.floor(Math.random() * colors.length)];
 
-    // Random falling speed
     confetti.style.animationDuration =
       (2 + Math.random() * 3) + "s";
 
     document.body.appendChild(confetti);
 
-    // Remove confetti when animation finishes
     confetti.addEventListener("animationend", function() {
       confetti.remove();
     });
