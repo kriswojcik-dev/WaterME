@@ -30,13 +30,15 @@
 
       <div class="difficulty-selection">
         <label for="difficulty-select">Choose Your Difficulty</label>
+
         <select id="difficulty-select">
           <option value="easy">Easy</option>
           <option value="normal" selected>Normal</option>
           <option value="hard">Hard</option>
         </select>
+
         <p id="difficulty-description">
-          Balanced gameplay with moderate challenges.
+          Balanced gameplay. Clean water unlocks at 80% school progress.
         </p>
       </div>
 
@@ -63,13 +65,12 @@
       <p id="difficulty-display">Difficulty: Normal</p>
 
       <div class="character-panel">
-        <div id="character-avatar" class="avatar" aria-live="polite">
-          (^‿^)<br>/|\
-        </div>
+        <div id="character-avatar" class="avatar" aria-live="polite">(^‿^)<br>/|\</div>
         <h3>Maya</h3>
         <p id="character-message">Feeling okay!</p>
       </div>
 
+      <!-- CHARACTER STATS -->
       <div class="stats" aria-label="Maya's stats">
 
         <div class="stat-row">
@@ -114,6 +115,7 @@
 
       </div>
 
+      <!-- ACTION BUTTONS -->
       <div class="action-grid">
         <button id="water-btn">💧 Water</button>
         <button id="eat-btn">🍎 Eat</button>
@@ -147,14 +149,17 @@
           <dt>Classes Attended</dt>
           <dd id="result-classes">0 / 7</dd>
         </div>
+
         <div>
           <dt>Hours Getting Water</dt>
           <dd id="result-water-hours">0</dd>
         </div>
+
         <div>
           <dt>Sick Days</dt>
           <dd id="result-sick-days">0</dd>
         </div>
+
         <div>
           <dt>School Progress</dt>
           <dd id="result-school">0%</dd>
@@ -174,6 +179,7 @@
       <h2 id="comparison-heading">What If Water Were Closer?</h2>
 
       <div class="comparison-table">
+
         <div class="comparison-row header-row">
           <span></span>
           <strong>Before</strong>
@@ -261,11 +267,13 @@
        role="dialog" aria-modal="true"
        aria-labelledby="how-to-heading">
     <div class="modal-card">
+
       <h2 id="how-to-heading">How to Play</h2>
 
       <p>Keep Maya healthy for 7 days.</p>
 
       <p><strong>Monitor:</strong></p>
+
       <ul>
         <li>Hydration</li>
         <li>Health</li>
@@ -277,8 +285,8 @@
       <p>Choose actions carefully. Every action takes time.</p>
 
       <p>
-        <strong>Water:</strong> Choose between the river and
-        public pump. Each has different risks and travel times.
+        <strong>Water:</strong> Choose between available
+        water sources. Each has different risks and travel times.
       </p>
 
       <p>
@@ -299,12 +307,33 @@
         Reach 100% school progress by the end of Day 7 to win!
       </p>
 
+      <h3>Difficulty Modes</h3>
+
       <p>
-        Easy, Normal, and Hard change sickness risks and
-        how quickly Maya loses hydration and energy.
+        <strong>Easy:</strong> All water sources available
+        immediately, with lower sickness risks.
       </p>
 
-      <button id="got-it-btn" class="primary-btn">Got It</button>
+      <p>
+        <strong>Normal:</strong> River and Public Pump
+        available immediately. Clean Water Point unlocks
+        at 80% school progress.
+      </p>
+
+      <p>
+        <strong>Hard:</strong> Start with River only.
+        Public Pump unlocks at 45% and Clean Water
+        Point unlocks at 80% school progress.
+      </p>
+
+      <p>
+        Once a water source is unlocked, it stays available
+        for the rest of the game.
+      </p>
+
+      <button id="got-it-btn" class="primary-btn">
+        Got It
+      </button>
     </div>
   </div>
 
@@ -313,41 +342,59 @@
        role="dialog" aria-modal="true"
        aria-labelledby="water-heading">
     <div class="modal-card wide-card">
+
       <h2 id="water-heading">Choose Water</h2>
 
+      <!-- RIVER -->
       <div class="water-option">
         <div>
           <h3>River</h3>
           <p>Hydration: +30</p>
           <p>Travel Time: 2 hours</p>
           <p>Water Quality: Unknown</p>
+          <p class="water-availability">Available</p>
         </div>
+
         <button id="river-btn">Select</button>
       </div>
 
-      <div class="water-option">
+      <!-- PUBLIC PUMP -->
+      <div id="pump-option" class="water-option">
         <div>
           <h3>Public Pump</h3>
           <p>Hydration: +30</p>
           <p>Travel Time: 45 minutes</p>
           <p>Water Quality: Moderate</p>
+          <p id="pump-status" class="water-availability">
+            Available
+          </p>
         </div>
+
         <button id="pump-btn">Select</button>
       </div>
 
-      
-<div id="clean-water-option" class="water-option locked-option">
-  <div>
-    <h3>Clean Water Point</h3>
-    <p>Hydration: +30</p>
-    <p>Travel Time: 15 minutes</p>
-    <p>Water Quality: Clean</p>
-    <p id="clean-water-status">Unlocks at 80% school progress.</p>
-  </div>
+      <!-- CLEAN WATER POINT -->
+      <div id="clean-water-option" class="water-option locked-option">
+        <div>
+          <h3>Clean Water Point</h3>
+          <p>Hydration: +30</p>
+          <p>Travel Time: 15 minutes</p>
+          <p>Water Quality: Clean</p>
+          <p id="clean-water-status" class="water-availability">
+            Unlocks at 80% school progress.
+          </p>
+        </div>
 
-  <button id="clean-water-btn" disabled>Locked</button>
-</div>
+        <button id="clean-water-btn" disabled>
+          Locked
+        </button>
+      </div>
 
+      <button id="cancel-water-btn" class="secondary-btn">
+        Cancel
+      </button>
+
+    </div>
   </div>
 
   <!-- EVENT MODAL -->
@@ -355,6 +402,7 @@
        role="dialog" aria-modal="true"
        aria-labelledby="event-heading">
     <div class="modal-card">
+
       <h2 id="event-heading">Event</h2>
 
       <div id="event-avatar" class="avatar">(^‿^)<br>/|\</div>
@@ -366,6 +414,7 @@
       <button id="event-continue-btn" class="primary-btn">
         Continue
       </button>
+
     </div>
   </div>
 

@@ -361,7 +361,36 @@ progress {
 }
 
 .locked-option {
-  opacity: 0.7;
+  opacity: 0.55;
+  background: #EAEAEA;
+}
+
+.water-availability {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #003366;
+}
+
+
+/* UNLOCKED WATER OPTIONS */
+
+#pump-option:not(.locked-option),
+#clean-water-option:not(.locked-option) {
+  border-color: #5AAD85;
+}
+
+#clean-water-option:not(.locked-option) {
+  background: #FFF7E1;
+  border: 2px solid #5AAD85;
+}
+
+#clean-water-option:not(.locked-option) button {
+  background: #FFC907;
+  color: #1A1A1A;
+}
+
+#clean-water-option:not(.locked-option) button:hover {
+  background: #E8B700;
 }
 
 

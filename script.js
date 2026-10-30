@@ -20,7 +20,10 @@ function createNewGame() {
 
     lastSchoolDay: 0,
     daysSick: [],
-    mealsToday: 0
+    mealsToday: 0,
+
+    pumpUnlocked: false,
+    cleanWaterUnlocked: false
   };
 }
 
@@ -59,12 +62,18 @@ let difficulty = "normal";
 document.getElementById("difficulty-select").addEventListener(
   "change",
   function() {
+
     difficulty = this.value;
 
     const descriptions = {
-      easy: "Lower sickness risks and slower stat loss.",
-      normal: "Balanced gameplay with moderate challenges.",
-      hard: "Higher sickness risks and faster stat loss."
+      easy:
+        "All water sources available immediately, with lower sickness risks.",
+
+      normal:
+        "River and Public Pump available. Clean Water unlocks at 80% school progress.",
+
+      hard:
+        "Start with River only. Public Pump unlocks at 45% and Clean Water at 80%."
     };
 
     document.getElementById("difficulty-description")
@@ -83,6 +92,84 @@ function showScreen(screenId) {
   });
 
   document.getElementById(screenId).classList.add("active");
+}
+
+
+// WATER SOURCE UNLOCK SYSTEM
+
+function updateWaterUnlocks() {
+
+  // Easy and Normal start with Public Pump available
+  if (difficulty === "easy" || difficulty === "normal") {
+    game.pumpUnlocked = true;
+  }
+
+  // Hard unlocks Public Pump at 45% school progress
+  if (
+    difficulty === "hard" &&
+    game.schoolProgress >= 45
+  ) {
+    game.pumpUnlocked = true;
+  }
+
+  // Easy starts with Clean Water available
+  if (difficulty === "easy") {
+    game.cleanWaterUnlocked = true;
+  }
+
+  // Normal and Hard unlock Clean Water at 80%
+  if (
+    difficulty !== "easy" &&
+    game.schoolProgress >= 80
+  ) {
+    game.cleanWaterUnlocked = true;
+  }
+
+  // Update Public Pump
+  const pumpButton =
+    document.getElementById("pump-btn");
+
+  const pumpOption =
+    document.getElementById("pump-option");
+
+  const pumpStatus =
+    document.getElementById("pump-status");
+
+  pumpButton.disabled = !game.pumpUnlocked;
+
+  if (game.pumpUnlocked) {
+    pumpButton.textContent = "Select";
+    pumpOption.classList.remove("locked-option");
+    pumpStatus.textContent = "Available";
+  } else {
+    pumpButton.textContent = "Locked";
+    pumpOption.classList.add("locked-option");
+    pumpStatus.textContent =
+      "Unlocks at 45% school progress.";
+  }
+
+  // Update Clean Water Point
+  const cleanButton =
+    document.getElementById("clean-water-btn");
+
+  const cleanOption =
+    document.getElementById("clean-water-option");
+
+  const cleanStatus =
+    document.getElementById("clean-water-status");
+
+  cleanButton.disabled = !game.cleanWaterUnlocked;
+
+  if (game.cleanWaterUnlocked) {
+    cleanButton.textContent = "Select";
+    cleanOption.classList.remove("locked-option");
+    cleanStatus.textContent = "Unlocked!";
+  } else {
+    cleanButton.textContent = "Locked";
+    cleanOption.classList.add("locked-option");
+    cleanStatus.textContent =
+      "Unlocks at 80% school progress.";
+  }
 }
 
 
@@ -146,6 +233,9 @@ function updateStats() {
   } else {
     characterMessage.textContent = "Feeling okay!";
   }
+
+  // Check for newly unlocked water sources
+  updateWaterUnlocks();
 }
 
 
@@ -210,14 +300,21 @@ document.getElementById("start-btn").addEventListener(
     difficulty =
       document.getElementById("difficulty-select").value;
 
+    // Create a fresh game for the chosen difficulty
+    game = createNewGame();
+    gameEnded = false;
+    pendingWaterTime = 0;
+
     document.getElementById("difficulty-display")
       .textContent =
       "Difficulty: " +
       difficulty.charAt(0).toUpperCase() +
       difficulty.slice(1);
 
-    showScreen("game-screen");
     updateStats();
+    updateStatus("Maya is feeling okay.");
+
+    showScreen("game-screen");
   }
 );
 
@@ -358,7 +455,10 @@ document.getElementById("rest-btn").addEventListener(
 document.getElementById("water-btn").addEventListener(
   "click",
   function() {
+
     if (gameEnded) return;
+
+    updateWaterUnlocks();
 
     document.getElementById("water-modal")
       .classList.remove("hidden");
@@ -382,13 +482,13 @@ function collectWater(source, travelTime, sicknessChance) {
 
   const collectionDay = game.day;
 
-  // Save travel time until the player clicks Continue
+  // Save travel time until Continue is clicked
   pendingWaterTime = travelTime;
 
   // Increase hydration immediately
   changeStat("hydration", 30);
 
-  // Track the total time spent collecting water
+  // Track total time collecting water
   game.waterHours += travelTime;
 
   // Close water selection
@@ -426,7 +526,7 @@ function collectWater(source, travelTime, sicknessChance) {
 
   } else {
 
-    // Success popup when Maya does not get sick
+    // Success popup
     updateStatus(
       "Maya successfully collected water from the " +
       source + "!"
@@ -440,7 +540,7 @@ function collectWater(source, travelTime, sicknessChance) {
     );
   }
 
-  // Time does not advance until Continue is clicked
+  // Time advances after the popup is acknowledged
 }
 
 
@@ -460,10 +560,29 @@ document.getElementById("river-btn").addEventListener(
 document.getElementById("pump-btn").addEventListener(
   "click",
   function() {
+
+    // Public Pump must be unlocked
+    if (!game.pumpUnlocked) return;
+
     collectWater(
       "public pump",
       0.75,
       difficultySettings[difficulty].pumpRisk
+    );
+  }
+);
+
+document.getElementById("clean-water-btn").addEventListener(
+  "click",
+  function() {
+
+    // Clean Water Point must be unlocked
+    if (!game.cleanWaterUnlocked) return;
+
+    collectWater(
+      "clean water point",
+      0.25,
+      0
     );
   }
 );
@@ -482,7 +601,7 @@ function showEvent(title, message, effects) {
   const effectsContainer =
     document.getElementById("event-effects");
 
-  // Remove elements from previous events
+  // Remove feedback from previous events
   effectsContainer.replaceChildren();
 
   // Create separate elements for each stat change
@@ -514,12 +633,13 @@ document.getElementById("event-continue-btn").addEventListener(
     document.getElementById("event-modal")
       .classList.add("hidden");
 
-    // Remove dynamically created feedback elements
+    // Remove created feedback elements
     document.getElementById("event-effects")
       .replaceChildren();
 
-    // Advance time after the player acknowledges the event
+    // Advance time after acknowledgment
     if (pendingWaterTime > 0) {
+
       const hours = pendingWaterTime;
 
       pendingWaterTime = 0;
@@ -603,11 +723,6 @@ document.getElementById("results-continue-btn").addEventListener(
 
 function resetGame() {
 
-
-// RESET THE GAME
-
-function resetGame() {
-
   // Remove remaining confetti
   document.querySelectorAll(".confetti").forEach(
     function(piece) {
@@ -627,11 +742,11 @@ function resetGame() {
     }
   );
 
-  // Clear previous event feedback
+  // Clear event feedback
   document.getElementById("event-effects")
     .replaceChildren();
 
-  // Reset difficulty to Normal
+  // Reset difficulty selection
   difficulty = "normal";
 
   document.getElementById("difficulty-select").value =
@@ -639,19 +754,18 @@ function resetGame() {
 
   document.getElementById("difficulty-description")
     .textContent =
-    "Balanced gameplay with moderate challenges.";
+    "Balanced gameplay. Clean water unlocks at 80% school progress.";
 
   document.getElementById("difficulty-display")
     .textContent = "Difficulty: Normal";
 
-  // Reset Maya's stats and status
+  // Reset stats and status
   updateStats();
   updateStatus("Maya is feeling okay.");
 
-  // Return to the difficulty selection screen
+  // Return to difficulty selection
   showScreen("start-screen");
 }
-
 
 
 // PLAY AGAIN BUTTON
@@ -700,23 +814,24 @@ function celebrateWin() {
 
     confetti.classList.add("confetti");
 
-    // Random position
     confetti.style.left =
       Math.random() * 100 + "vw";
 
-    // Random color
     confetti.style.backgroundColor =
       colors[Math.floor(Math.random() * colors.length)];
 
-    // Random falling speed
     confetti.style.animationDuration =
       (2 + Math.random() * 3) + "s";
 
     document.body.appendChild(confetti);
 
-    // Remove confetti after animation
     confetti.addEventListener("animationend", function() {
       confetti.remove();
     });
   }
 }
+
+
+// INITIAL DISPLAY
+
+updateStats();
