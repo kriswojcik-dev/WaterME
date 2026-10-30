@@ -2,11 +2,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Water Me</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <main class="app-shell">
 
@@ -18,8 +24,21 @@
       <div class="avatar large" aria-label="Maya avatar">(^‿^)<br>/|\</div>
 
       <p class="intro-copy">
-        Keep your character healthy and help them make it through the school week.
+        Keep Maya healthy and help her make it through seven days
+        while managing access to clean water.
       </p>
+
+      <div class="difficulty-selection">
+        <label for="difficulty-select">Choose Your Difficulty</label>
+        <select id="difficulty-select">
+          <option value="easy">Easy</option>
+          <option value="normal" selected>Normal</option>
+          <option value="hard">Hard</option>
+        </select>
+        <p id="difficulty-description">
+          Balanced gameplay with moderate challenges.
+        </p>
+      </div>
 
       <div class="stacked-buttons">
         <button id="start-btn" class="primary-btn">Start Game</button>
@@ -41,9 +60,12 @@
       </header>
 
       <h2 id="period-display">Morning</h2>
+      <p id="difficulty-display">Difficulty: Normal</p>
 
       <div class="character-panel">
-        <div id="character-avatar" class="avatar" aria-live="polite">(^‿^)<br>/|\</div>
+        <div id="character-avatar" class="avatar" aria-live="polite">
+          (^‿^)<br>/|\
+        </div>
         <h3>Maya</h3>
         <p id="character-message">Feeling okay!</p>
       </div>
@@ -125,17 +147,14 @@
           <dt>Classes Attended</dt>
           <dd id="result-classes">0 / 7</dd>
         </div>
-
         <div>
           <dt>Hours Getting Water</dt>
           <dd id="result-water-hours">0</dd>
         </div>
-
         <div>
           <dt>Sick Days</dt>
           <dd id="result-sick-days">0</dd>
         </div>
-
         <div>
           <dt>School Progress</dt>
           <dd id="result-school">0%</dd>
@@ -155,7 +174,6 @@
       <h2 id="comparison-heading">What If Water Were Closer?</h2>
 
       <div class="comparison-table">
-
         <div class="comparison-row header-row">
           <span></span>
           <strong>Before</strong>
@@ -179,7 +197,6 @@
           <span id="compare-classes">0/7</span>
           <span>7/7</span>
         </div>
-
       </div>
 
       <p class="comparison-note">
@@ -198,8 +215,7 @@
           class="button-link"
           href="https://www.charitywater.org/"
           target="_blank"
-          rel="noopener noreferrer"
-        >
+          rel="noopener noreferrer">
           Learn More
         </a>
 
@@ -211,15 +227,45 @@
 
   </main>
 
+  <!-- CHARITY: WATER FOOTER -->
+  <footer class="site-footer">
+    <p>
+      Inspired by charity: water's mission to bring
+      clean and safe water to everyone.
+    </p>
+
+    <nav aria-label="charity: water links">
+      <a
+        href="https://www.charitywater.org/"
+        target="_blank"
+        rel="noopener noreferrer">
+        Visit charity: water
+      </a>
+
+      <a
+        href="https://www.charitywater.org/donate"
+        target="_blank"
+        rel="noopener noreferrer">
+        Donate
+      </a>
+    </nav>
+
+    <p class="disclaimer">
+      An educational student project.
+      Not affiliated with charity: water.
+    </p>
+  </footer>
+
   <!-- HOW TO PLAY MODAL -->
-  <div id="how-to-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="how-to-heading">
+  <div id="how-to-modal" class="modal hidden"
+       role="dialog" aria-modal="true"
+       aria-labelledby="how-to-heading">
     <div class="modal-card">
       <h2 id="how-to-heading">How to Play</h2>
 
       <p>Keep Maya healthy for 7 days.</p>
 
       <p><strong>Monitor:</strong></p>
-
       <ul>
         <li>Hydration</li>
         <li>Health</li>
@@ -231,16 +277,21 @@
       <p>Choose actions carefully. Every action takes time.</p>
 
       <p>
-        <strong>School</strong> takes 8 hours and can be
+        <strong>Water:</strong> Choose between the river and
+        public pump. Each has different risks and travel times.
+      </p>
+
+      <p>
+        <strong>Eat:</strong> Up to 3 meals per day.
+      </p>
+
+      <p>
+        <strong>School:</strong> Takes 8 hours and can be
         attended once per day.
       </p>
 
       <p>
-        <strong>Eat</strong> up to 3 meals each day.
-      </p>
-
-      <p>
-        <strong>Rest</strong> restores energy and health
+        <strong>Rest:</strong> Restores health and energy
         and begins the next morning.
       </p>
 
@@ -248,14 +299,20 @@
         Reach 100% school progress by the end of Day 7 to win!
       </p>
 
+      <p>
+        Easy, Normal, and Hard change sickness risks and
+        how quickly Maya loses hydration and energy.
+      </p>
+
       <button id="got-it-btn" class="primary-btn">Got It</button>
     </div>
   </div>
 
   <!-- WATER MODAL -->
-  <div id="water-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="water-heading">
+  <div id="water-modal" class="modal hidden"
+       role="dialog" aria-modal="true"
+       aria-labelledby="water-heading">
     <div class="modal-card wide-card">
-
       <h2 id="water-heading">Choose Water</h2>
 
       <div class="water-option">
@@ -265,7 +322,6 @@
           <p>Travel Time: 2 hours</p>
           <p>Water Quality: Unknown</p>
         </div>
-
         <button id="river-btn">Select</button>
       </div>
 
@@ -276,7 +332,6 @@
           <p>Travel Time: 45 minutes</p>
           <p>Water Quality: Moderate</p>
         </div>
-
         <button id="pump-btn">Select</button>
       </div>
 
@@ -285,21 +340,20 @@
           <h3>Clean Water Point</h3>
           <p>Not yet available.</p>
         </div>
-
         <button disabled>Locked</button>
       </div>
 
       <button id="cancel-water-btn" class="secondary-btn">
         Cancel
       </button>
-
     </div>
   </div>
 
   <!-- EVENT MODAL -->
-  <div id="event-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="event-heading">
+  <div id="event-modal" class="modal hidden"
+       role="dialog" aria-modal="true"
+       aria-labelledby="event-heading">
     <div class="modal-card">
-
       <h2 id="event-heading">Event</h2>
 
       <div id="event-avatar" class="avatar">(^‿^)<br>/|\</div>
@@ -311,7 +365,6 @@
       <button id="event-continue-btn" class="primary-btn">
         Continue
       </button>
-
     </div>
   </div>
 
