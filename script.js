@@ -25,9 +25,52 @@ function createNewGame() {
 }
 
 let game = createNewGame();
-
-// Tracks time that should advance after an event
 let pendingWaterTime = 0;
+let gameEnded = false;
+
+
+// DIFFICULTY SETTINGS
+
+const difficultySettings = {
+  easy: {
+    riverRisk: 0.30,
+    pumpRisk: 0.05,
+    statLoss: 0.75
+  },
+
+  normal: {
+    riverRisk: 0.60,
+    pumpRisk: 0.10,
+    statLoss: 1
+  },
+
+  hard: {
+    riverRisk: 0.80,
+    pumpRisk: 0.25,
+    statLoss: 1.5
+  }
+};
+
+let difficulty = "normal";
+
+
+// UPDATE DIFFICULTY SELECTION
+
+document.getElementById("difficulty-select").addEventListener(
+  "change",
+  function() {
+    difficulty = this.value;
+
+    const descriptions = {
+      easy: "Lower sickness risks and slower stat loss.",
+      normal: "Balanced gameplay with moderate challenges.",
+      hard: "Higher sickness risks and faster stat loss."
+    };
+
+    document.getElementById("difficulty-description")
+      .textContent = descriptions[difficulty];
+  }
+);
 
 
 // CHANGE SCREENS
@@ -129,9 +172,11 @@ function updateStatus(message) {
 
 function advanceTime(hours) {
 
-  // Maya becomes thirstier and more tired over time
-  changeStat("hydration", -3 * hours);
-  changeStat("energy", -2 * hours);
+  // Adjust stat loss based on difficulty
+  const statLoss = difficultySettings[difficulty].statLoss;
+
+  changeStat("hydration", -3 * hours * statLoss);
+  changeStat("energy", -2 * hours * statLoss);
 
   // Low hydration reduces health
   if (game.hydration < 20) {
@@ -161,6 +206,16 @@ function advanceTime(hours) {
 document.getElementById("start-btn").addEventListener(
   "click",
   function() {
+
+    difficulty =
+      document.getElementById("difficulty-select").value;
+
+    document.getElementById("difficulty-display")
+      .textContent =
+      "Difficulty: " +
+      difficulty.charAt(0).toUpperCase() +
+      difficulty.slice(1);
+
     showScreen("game-screen");
     updateStats();
   }
@@ -192,7 +247,9 @@ document.getElementById("eat-btn").addEventListener(
   "click",
   function() {
 
-    // Maya can eat only 3 times per day
+    if (gameEnded) return;
+
+    // Maya can eat only 3 times each day
     if (game.mealsToday >= 3) {
       updateStatus("Maya has already eaten 3 meals today!");
       return;
@@ -218,6 +275,8 @@ document.getElementById("eat-btn").addEventListener(
 document.getElementById("school-btn").addEventListener(
   "click",
   function() {
+
+    if (gameEnded) return;
 
     // School can only happen once per day
     if (game.lastSchoolDay === game.day) {
@@ -264,11 +323,16 @@ document.getElementById("rest-btn").addEventListener(
   "click",
   function() {
 
+    if (gameEnded) return;
+
     changeStat("energy", 40);
     changeStat("health", 10);
 
-    // Hydration decreases during overnight sleep
-    changeStat("hydration", -24);
+    // Hydration decreases during overnight rest
+    changeStat(
+      "hydration",
+      -24 * difficultySettings[difficulty].statLoss
+    );
 
     // Rest begins the next morning
     game.day += 1;
@@ -294,6 +358,8 @@ document.getElementById("rest-btn").addEventListener(
 document.getElementById("water-btn").addEventListener(
   "click",
   function() {
+    if (gameEnded) return;
+
     document.getElementById("water-modal")
       .classList.remove("hidden");
   }
@@ -312,22 +378,24 @@ document.getElementById("cancel-water-btn").addEventListener(
 
 function collectWater(source, travelTime, sicknessChance) {
 
+  if (gameEnded || pendingWaterTime > 0) return;
+
   const collectionDay = game.day;
-
-  // Increase hydration immediately
-  changeStat("hydration", 30);
-
-  // Track how much time Maya spent collecting water
-  game.waterHours += travelTime;
 
   // Save travel time until the player clicks Continue
   pendingWaterTime = travelTime;
 
-  // Close water selection menu
+  // Increase hydration immediately
+  changeStat("hydration", 30);
+
+  // Track the total time spent collecting water
+  game.waterHours += travelTime;
+
+  // Close water selection
   document.getElementById("water-modal")
     .classList.add("hidden");
 
-  // Determine if the water makes Maya sick
+  // Random chance of sickness
   const randomNumber = Math.random();
 
   if (randomNumber < sicknessChance) {
@@ -358,7 +426,7 @@ function collectWater(source, travelTime, sicknessChance) {
 
   } else {
 
-    // Show positive feedback when Maya does not get sick
+    // Success popup when Maya does not get sick
     updateStatus(
       "Maya successfully collected water from the " +
       source + "!"
@@ -372,8 +440,7 @@ function collectWater(source, travelTime, sicknessChance) {
     );
   }
 
-  // Time does not advance here.
-  // It advances when the player closes the event popup.
+  // Time does not advance until Continue is clicked
 }
 
 
@@ -382,37 +449,56 @@ function collectWater(source, travelTime, sicknessChance) {
 document.getElementById("river-btn").addEventListener(
   "click",
   function() {
-    // 60% chance of sickness
-    collectWater("river", 2, 0.60);
+    collectWater(
+      "river",
+      2,
+      difficultySettings[difficulty].riverRisk
+    );
   }
 );
 
 document.getElementById("pump-btn").addEventListener(
   "click",
   function() {
-    // 10% chance of sickness
-    collectWater("public pump", 0.75, 0.10);
+    collectWater(
+      "public pump",
+      0.75,
+      difficultySettings[difficulty].pumpRisk
+    );
   }
 );
 
 
-// EVENT POPUP
+// DYNAMIC EVENT POPUP
 
 function showEvent(title, message, effects) {
 
-  // Update popup heading
   document.getElementById("event-heading").textContent =
     title;
 
-  // Update popup message
   document.getElementById("event-text").textContent =
     message;
 
-  // Update stat changes
-  document.getElementById("event-effects").textContent =
-    effects;
+  const effectsContainer =
+    document.getElementById("event-effects");
 
-  // Display the popup
+  // Remove elements from previous events
+  effectsContainer.replaceChildren();
+
+  // Create separate elements for each stat change
+  const effectList = effects.split(",");
+
+  effectList.forEach(function(effect) {
+
+    const effectElement = document.createElement("p");
+
+    effectElement.classList.add("event-effect");
+
+    effectElement.textContent = effect.trim();
+
+    effectsContainer.appendChild(effectElement);
+  });
+
   document.getElementById("event-modal")
     .classList.remove("hidden");
 }
@@ -424,16 +510,18 @@ document.getElementById("event-continue-btn").addEventListener(
   "click",
   function() {
 
-    // Close the event popup
+    // Close the popup
     document.getElementById("event-modal")
       .classList.add("hidden");
 
-    // Advance time only after the player acknowledges the event
-    if (pendingWaterTime > 0) {
+    // Remove dynamically created feedback elements
+    document.getElementById("event-effects")
+      .replaceChildren();
 
+    // Advance time after the player acknowledges the event
+    if (pendingWaterTime > 0) {
       const hours = pendingWaterTime;
 
-      // Clear pending time to prevent duplicate advancement
       pendingWaterTime = 0;
 
       advanceTime(hours);
@@ -446,28 +534,28 @@ document.getElementById("event-continue-btn").addEventListener(
 
 function endGame() {
 
-  // Close any open popups
+  if (gameEnded) return;
+
+  gameEnded = true;
+  pendingWaterTime = 0;
+
+  // Close popups
   document.getElementById("event-modal")
     .classList.add("hidden");
 
   document.getElementById("water-modal")
     .classList.add("hidden");
 
-  pendingWaterTime = 0;
-
-  // Show classes attended
+  // Show results
   document.getElementById("result-classes").textContent =
     game.classesAttended + " / 7";
 
-  // Show water collection time
   document.getElementById("result-water-hours").textContent =
     Math.round(game.waterHours * 100) / 100;
 
-  // Show number of sick days
   document.getElementById("result-sick-days").textContent =
     game.sickDays;
 
-  // Show final school progress
   document.getElementById("result-school").textContent =
     game.schoolProgress + "%";
 
@@ -484,7 +572,7 @@ function endGame() {
 
   showScreen("results-screen");
 
-  // Celebrate only when school progress is 100%
+  // Celebrate only at exactly 100%
   if (game.schoolProgress === 100) {
     celebrateWin();
   }
@@ -515,28 +603,37 @@ document.getElementById("results-continue-btn").addEventListener(
 
 function resetGame() {
 
-  // Remove any remaining confetti
+  // Remove remaining confetti
   document.querySelectorAll(".confetti").forEach(
     function(piece) {
       piece.remove();
     }
   );
 
-  // Reset all game variables
+  // Reset game variables
   game = createNewGame();
-
-  // Clear any unfinished water event
   pendingWaterTime = 0;
+  gameEnded = false;
 
-  // Close all popups
+  // Close open modals and clear event feedback
   document.querySelectorAll(".modal").forEach(
     function(modal) {
       modal.classList.add("hidden");
     }
   );
 
+  document.getElementById("event-effects")
+    .replaceChildren();
+
   updateStats();
   updateStatus("Maya is feeling okay.");
+
+  // Keep the selected difficulty for the new game
+  document.getElementById("difficulty-display")
+    .textContent =
+    "Difficulty: " +
+    difficulty.charAt(0).toUpperCase() +
+    difficulty.slice(1);
 
   showScreen("game-screen");
 }
@@ -588,17 +685,21 @@ function celebrateWin() {
 
     confetti.classList.add("confetti");
 
+    // Random position
     confetti.style.left =
       Math.random() * 100 + "vw";
 
+    // Random color
     confetti.style.backgroundColor =
       colors[Math.floor(Math.random() * colors.length)];
 
+    // Random falling speed
     confetti.style.animationDuration =
       (2 + Math.random() * 3) + "s";
 
     document.body.appendChild(confetti);
 
+    // Remove confetti after animation
     confetti.addEventListener("animationend", function() {
       confetti.remove();
     });
