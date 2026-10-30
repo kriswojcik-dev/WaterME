@@ -16,6 +16,7 @@ function createNewGame() {
 
     classesAttended: 0,
     waterHours: 0,
+    waterTrips: 0,
     sickDays: 0,
 
     lastSchoolDay: 0,
@@ -24,7 +25,7 @@ function createNewGame() {
 
     pumpUnlocked: false,
     cleanWaterUnlocked: false,
-    waterTrips: 0,
+    achievedMilestones: []
   };
 }
 
@@ -58,12 +59,163 @@ const difficultySettings = {
 let difficulty = "normal";
 
 
+// SOUND EFFECTS
+
+const sounds = {
+  water: new Audio("sounds/water.mp3"),
+  success: new Audio("sounds/success.mp3")
+};
+
+sounds.water.volume = 0.35;
+sounds.success.volume = 0.45;
+
+function playSound(name) {
+  const sound = sounds[name];
+
+  if (!sound) return;
+
+  // Restart the sound when triggered again
+  sound.pause();
+  sound.currentTime = 0;
+
+  // Ignore playback errors if audio is unavailable
+  const playback = sound.play();
+
+  if (playback) {
+    playback.catch(function() {
+      // The game remains playable without audio.
+    });
+  }
+}
+
+
+// SCHOOL PROGRESS MILESTONES
+
+const milestones = [
+  {
+    score: 25,
+    title: "Great Start!",
+    message: "Maya is making progress toward her education."
+  },
+  {
+    score: 45,
+    title: "Keep Going!",
+    message: "Maya's hard work is paying off."
+  },
+  {
+    score: 60,
+    title: "Over Halfway There!",
+    message: "Maya is getting closer to her goal."
+  },
+  {
+    score: 80,
+    title: "Almost There!",
+    message: "Maya is so close to completing her education goal."
+  },
+  {
+    score: 100,
+    title: "Goal Achieved!",
+    message: "Maya reached her education goal!"
+  }
+];
+
+
+// CREATE MILESTONE PANEL IN THE DOM
+
+const milestonePanel = document.createElement("section");
+milestonePanel.id = "milestone-panel";
+
+const milestoneHeading = document.createElement("h3");
+milestoneHeading.textContent = "🏆 Achievements";
+
+const milestoneList = document.createElement("div");
+milestoneList.id = "milestone-list";
+milestoneList.setAttribute("aria-live", "polite");
+
+milestonePanel.appendChild(milestoneHeading);
+milestonePanel.appendChild(milestoneList);
+
+// Place milestones below the stat bars
+document.querySelector("#game-screen .stats")
+  .insertAdjacentElement("afterend", milestonePanel);
+
+
+// UPDATE MILESTONE DISPLAY
+
+function updateMilestoneDisplay() {
+  milestoneList.replaceChildren();
+
+  if (game.achievedMilestones.length === 0) {
+    const emptyMessage = document.createElement("p");
+    emptyMessage.id = "milestone-empty";
+    emptyMessage.textContent =
+      "Attend school to earn achievements!";
+    milestoneList.appendChild(emptyMessage);
+    return;
+  }
+
+  game.achievedMilestones.forEach(function(score, index) {
+    const milestone = milestones.find(function(item) {
+      return item.score === score;
+    });
+
+    if (!milestone) return;
+
+    const item = document.createElement("div");
+    item.classList.add("milestone-item");
+
+    if (index === game.achievedMilestones.length - 1) {
+      item.classList.add("latest");
+    }
+
+    const title = document.createElement("strong");
+    title.textContent =
+      milestone.score + "% — " + milestone.title;
+
+    const message = document.createElement("span");
+    message.textContent = milestone.message;
+
+    item.appendChild(title);
+    item.appendChild(message);
+
+    milestoneList.appendChild(item);
+  });
+}
+
+
+// CHECK FOR NEW MILESTONES
+
+function checkMilestones() {
+  let newMilestone = null;
+
+  milestones.forEach(function(milestone) {
+    const reached = game.schoolProgress >= milestone.score;
+    const alreadyEarned =
+      game.achievedMilestones.includes(milestone.score);
+
+    if (reached && !alreadyEarned) {
+      game.achievedMilestones.push(milestone.score);
+      newMilestone = milestone;
+    }
+  });
+
+  if (newMilestone) {
+    updateMilestoneDisplay();
+    playSound("success");
+
+    updateStatus(
+      "🏆 " + newMilestone.title + " " +
+      newMilestone.message
+    );
+  }
+}
+
+
 // UPDATE DIFFICULTY SELECTION
 
 document.getElementById("difficulty-select").addEventListener(
   "change",
   function() {
-
     difficulty = this.value;
 
     const descriptions = {
@@ -86,11 +238,11 @@ document.getElementById("difficulty-select").addEventListener(
 // CHANGE SCREENS
 
 function showScreen(screenId) {
-  const screens = document.querySelectorAll(".screen");
-
-  screens.forEach(function(screen) {
-    screen.classList.remove("active");
-  });
+  document.querySelectorAll(".screen").forEach(
+    function(screen) {
+      screen.classList.remove("active");
+    }
+  );
 
   document.getElementById(screenId).classList.add("active");
 }
@@ -100,12 +252,10 @@ function showScreen(screenId) {
 
 function updateWaterUnlocks() {
 
-  // Easy and Normal start with Public Pump available
   if (difficulty === "easy" || difficulty === "normal") {
     game.pumpUnlocked = true;
   }
 
-  // Hard unlocks Public Pump at 45% school progress
   if (
     difficulty === "hard" &&
     game.schoolProgress >= 45
@@ -113,12 +263,10 @@ function updateWaterUnlocks() {
     game.pumpUnlocked = true;
   }
 
-  // Easy starts with Clean Water available
   if (difficulty === "easy") {
     game.cleanWaterUnlocked = true;
   }
 
-  // Normal and Hard unlock Clean Water at 80%
   if (
     difficulty !== "easy" &&
     game.schoolProgress >= 80
@@ -126,15 +274,10 @@ function updateWaterUnlocks() {
     game.cleanWaterUnlocked = true;
   }
 
-  // Update Public Pump
-  const pumpButton =
-    document.getElementById("pump-btn");
-
-  const pumpOption =
-    document.getElementById("pump-option");
-
-  const pumpStatus =
-    document.getElementById("pump-status");
+  // Public Pump
+  const pumpButton = document.getElementById("pump-btn");
+  const pumpOption = document.getElementById("pump-option");
+  const pumpStatus = document.getElementById("pump-status");
 
   pumpButton.disabled = !game.pumpUnlocked;
 
@@ -149,7 +292,7 @@ function updateWaterUnlocks() {
       "Unlocks at 45% school progress.";
   }
 
-  // Update Clean Water Point
+  // Clean Water Point
   const cleanButton =
     document.getElementById("clean-water-btn");
 
@@ -204,10 +347,8 @@ function updateStats() {
 
   document.getElementById("time-display").textContent =
     displayHour + ":" +
-    String(minutes).padStart(2, "0") +
-    " " + ampm;
+    String(minutes).padStart(2, "0") + " " + ampm;
 
-  // Update time of day
   let period = "Morning";
 
   if (game.time >= 12 && game.time < 17) {
@@ -221,7 +362,6 @@ function updateStats() {
   document.getElementById("period-display").textContent =
     period;
 
-  // Update Maya's message
   const characterMessage =
     document.getElementById("character-message");
 
@@ -235,7 +375,6 @@ function updateStats() {
     characterMessage.textContent = "Feeling okay!";
   }
 
-  // Check for newly unlocked water sources
   updateWaterUnlocks();
 }
 
@@ -244,9 +383,7 @@ function updateStats() {
 
 function changeStat(stat, amount) {
   game[stat] += amount;
-
   game[stat] = Math.max(0, Math.min(100, game[stat]));
-
   updateStats();
 }
 
@@ -262,14 +399,11 @@ function updateStatus(message) {
 // ADVANCE TIME
 
 function advanceTime(hours) {
-
-  // Adjust stat loss based on difficulty
   const statLoss = difficultySettings[difficulty].statLoss;
 
   changeStat("hydration", -3 * hours * statLoss);
   changeStat("energy", -2 * hours * statLoss);
 
-  // Low hydration reduces health
   if (game.hydration < 20) {
     changeStat("health", -5);
     updateStatus("Maya is dehydrated and losing health!");
@@ -277,7 +411,6 @@ function advanceTime(hours) {
 
   game.time += hours;
 
-  // Begin a new day after midnight
   while (game.time >= 24) {
     game.time -= 24;
     game.day += 1;
@@ -297,11 +430,9 @@ function advanceTime(hours) {
 document.getElementById("start-btn").addEventListener(
   "click",
   function() {
-
     difficulty =
       document.getElementById("difficulty-select").value;
 
-    // Create a fresh game for the chosen difficulty
     game = createNewGame();
     gameEnded = false;
     pendingWaterTime = 0;
@@ -312,9 +443,9 @@ document.getElementById("start-btn").addEventListener(
       difficulty.charAt(0).toUpperCase() +
       difficulty.slice(1);
 
+    updateMilestoneDisplay();
     updateStats();
     updateStatus("Maya is feeling okay.");
-
     showScreen("game-screen");
   }
 );
@@ -344,10 +475,8 @@ document.getElementById("got-it-btn").addEventListener(
 document.getElementById("eat-btn").addEventListener(
   "click",
   function() {
-
     if (gameEnded) return;
 
-    // Maya can eat only 3 times each day
     if (game.mealsToday >= 3) {
       updateStatus("Maya has already eaten 3 meals today!");
       return;
@@ -373,22 +502,18 @@ document.getElementById("eat-btn").addEventListener(
 document.getElementById("school-btn").addEventListener(
   "click",
   function() {
-
     if (gameEnded) return;
 
-    // School can only happen once per day
     if (game.lastSchoolDay === game.day) {
       updateStatus("Maya already attended school today!");
       return;
     }
 
-    // School must begin by 4:00 PM
     if (game.time > 16) {
       updateStatus("It's too late to attend school today!");
       return;
     }
 
-    // Maya must be healthy enough to attend
     if (
       game.energy < 20 ||
       game.hydration < 20 ||
@@ -411,6 +536,9 @@ document.getElementById("school-btn").addEventListener(
     updateStatus("Maya made it to class today!");
 
     advanceTime(8);
+
+    // Check milestones after school is completed
+    checkMilestones();
   }
 );
 
@@ -420,19 +548,16 @@ document.getElementById("school-btn").addEventListener(
 document.getElementById("rest-btn").addEventListener(
   "click",
   function() {
-
     if (gameEnded) return;
 
     changeStat("energy", 40);
     changeStat("health", 10);
 
-    // Hydration decreases during overnight rest
     changeStat(
       "hydration",
       -24 * difficultySettings[difficulty].statLoss
     );
 
-    // Rest begins the next morning
     game.day += 1;
     game.time = 8;
     game.mealsToday = 0;
@@ -456,7 +581,6 @@ document.getElementById("rest-btn").addEventListener(
 document.getElementById("water-btn").addEventListener(
   "click",
   function() {
-
     if (gameEnded) return;
 
     updateWaterUnlocks();
@@ -478,36 +602,30 @@ document.getElementById("cancel-water-btn").addEventListener(
 // COLLECT WATER
 
 function collectWater(source, travelTime, sicknessChance) {
-
   if (gameEnded || pendingWaterTime > 0) return;
 
   const collectionDay = game.day;
 
-  // Save travel time until Continue is clicked
   pendingWaterTime = travelTime;
 
-  // Increase hydration immediately
   changeStat("hydration", 30);
 
-  // Track total time collecting water
   game.waterHours += travelTime;
   game.waterTrips += 1;
 
-  // Close water selection
   document.getElementById("water-modal")
     .classList.add("hidden");
 
-  // Random chance of sickness
-  const randomNumber = Math.random();
+  // Sound effect when Maya collects water
+  playSound("water");
 
-  if (randomNumber < sicknessChance) {
+  if (Math.random() < sicknessChance) {
 
     changeStat("health", -15);
     changeStat("energy", -20);
     changeStat("mood", -10);
     changeStat("schoolProgress", -5);
 
-    // Count each sick day only once
     if (!game.daysSick.includes(collectionDay)) {
       game.daysSick.push(collectionDay);
       game.sickDays += 1;
@@ -528,7 +646,6 @@ function collectWater(source, travelTime, sicknessChance) {
 
   } else {
 
-    // Success popup
     updateStatus(
       "Maya successfully collected water from the " +
       source + "!"
@@ -541,8 +658,6 @@ function collectWater(source, travelTime, sicknessChance) {
       "Hydration +30"
     );
   }
-
-  // Time advances after the popup is acknowledged
 }
 
 
@@ -562,8 +677,6 @@ document.getElementById("river-btn").addEventListener(
 document.getElementById("pump-btn").addEventListener(
   "click",
   function() {
-
-    // Public Pump must be unlocked
     if (!game.pumpUnlocked) return;
 
     collectWater(
@@ -577,15 +690,9 @@ document.getElementById("pump-btn").addEventListener(
 document.getElementById("clean-water-btn").addEventListener(
   "click",
   function() {
-
-    // Clean Water Point must be unlocked
     if (!game.cleanWaterUnlocked) return;
 
-    collectWater(
-      "clean water point",
-      0.25,
-      0
-    );
+    collectWater("clean water point", 0.25, 0);
   }
 );
 
@@ -593,7 +700,6 @@ document.getElementById("clean-water-btn").addEventListener(
 // DYNAMIC EVENT POPUP
 
 function showEvent(title, message, effects) {
-
   document.getElementById("event-heading").textContent =
     title;
 
@@ -603,18 +709,12 @@ function showEvent(title, message, effects) {
   const effectsContainer =
     document.getElementById("event-effects");
 
-  // Remove feedback from previous events
   effectsContainer.replaceChildren();
 
-  // Create separate elements for each stat change
-  const effectList = effects.split(",");
-
-  effectList.forEach(function(effect) {
-
+  effects.split(",").forEach(function(effect) {
     const effectElement = document.createElement("p");
 
     effectElement.classList.add("event-effect");
-
     effectElement.textContent = effect.trim();
 
     effectsContainer.appendChild(effectElement);
@@ -630,22 +730,15 @@ function showEvent(title, message, effects) {
 document.getElementById("event-continue-btn").addEventListener(
   "click",
   function() {
-
-    // Close the popup
     document.getElementById("event-modal")
       .classList.add("hidden");
 
-    // Remove created feedback elements
     document.getElementById("event-effects")
       .replaceChildren();
 
-    // Advance time after acknowledgment
     if (pendingWaterTime > 0) {
-
       const hours = pendingWaterTime;
-
       pendingWaterTime = 0;
-
       advanceTime(hours);
     }
   }
@@ -655,20 +748,17 @@ document.getElementById("event-continue-btn").addEventListener(
 // END THE GAME
 
 function endGame() {
-
   if (gameEnded) return;
 
   gameEnded = true;
   pendingWaterTime = 0;
 
-  // Close popups
   document.getElementById("event-modal")
     .classList.add("hidden");
 
   document.getElementById("water-modal")
     .classList.add("hidden");
 
-  // Show results
   document.getElementById("result-classes").textContent =
     game.classesAttended + " / 7";
 
@@ -687,6 +777,8 @@ function endGame() {
   if (game.schoolProgress === 100) {
     resultMessage.textContent =
       "You Win! Maya reached 100% school progress!";
+
+    playSound("success");
   } else {
     resultMessage.textContent =
       "Keep Trying! Can you reach 100% next time?";
@@ -694,7 +786,6 @@ function endGame() {
 
   showScreen("results-screen");
 
-  // Celebrate only at exactly 100%
   if (game.schoolProgress === 100) {
     celebrateWin();
   }
@@ -703,23 +794,14 @@ function endGame() {
 
 // RESULTS AND COMPARISON SCREEN
 
-
-// RESULTS AND COMPARISON SCREEN
-
 document.getElementById("results-continue-btn").addEventListener(
   "click",
   function() {
 
-    // Calculate hypothetical clean water collection time
     const cleanWaterHours = game.waterTrips * 0.25;
 
-    // Display actual water collection time
     document.getElementById("compare-water-time").textContent =
       game.waterHours.toFixed(2) + " hrs";
-
-    // Display hypothetical clean water collection time
-    document.getElementById("compare-clean-water-time").textContent =
-      cleanWaterHours.toFixed(2) + " hrs";
 
     document.getElementById("compare-sick-days").textContent =
       game.sickDays;
@@ -727,40 +809,43 @@ document.getElementById("results-continue-btn").addEventListener(
     document.getElementById("compare-classes").textContent =
       game.classesAttended + "/7";
 
+    // Calculate hypothetical water travel time
+    const cleanWaterElement =
+      document.getElementById("compare-clean-water-time");
+
+    if (cleanWaterElement) {
+      cleanWaterElement.textContent =
+        cleanWaterHours.toFixed(2) + " hrs";
+    }
+
     showScreen("comparison-screen");
   }
 );
-
 
 
 // RESET THE GAME
 
 function resetGame() {
 
-  // Remove remaining confetti
   document.querySelectorAll(".confetti").forEach(
     function(piece) {
       piece.remove();
     }
   );
 
-  // Reset game variables
   game = createNewGame();
   pendingWaterTime = 0;
   gameEnded = false;
 
-  // Close open modals
   document.querySelectorAll(".modal").forEach(
     function(modal) {
       modal.classList.add("hidden");
     }
   );
 
-  // Clear event feedback
   document.getElementById("event-effects")
     .replaceChildren();
 
-  // Reset difficulty selection
   difficulty = "normal";
 
   document.getElementById("difficulty-select").value =
@@ -773,11 +858,10 @@ function resetGame() {
   document.getElementById("difficulty-display")
     .textContent = "Difficulty: Normal";
 
-  // Reset stats and status
+  updateMilestoneDisplay();
   updateStats();
   updateStatus("Maya is feeling okay.");
 
-  // Return to difficulty selection
   showScreen("start-screen");
 }
 
@@ -812,7 +896,6 @@ document.getElementById("reset-btn").addEventListener(
 // CONFETTI CELEBRATION
 
 function celebrateWin() {
-
   const colors = [
     "#FFC907",
     "#003366",
@@ -821,9 +904,7 @@ function celebrateWin() {
     "#5AAD85"
   ];
 
-  // Create 60 pieces of confetti
   for (let i = 0; i < 60; i++) {
-
     const confetti = document.createElement("div");
 
     confetti.classList.add("confetti");
@@ -848,4 +929,5 @@ function celebrateWin() {
 
 // INITIAL DISPLAY
 
+updateMilestoneDisplay();
 updateStats();

@@ -616,3 +616,49 @@ progress {
     padding: 1.25rem;
   }
 }
+
+/* SCHOOL MILESTONE ACHIEVEMENTS */
+
+#milestone-panel {
+  max-width: 520px;
+  margin: 1.5rem auto;
+  padding: 1rem;
+  background: #FFF7E1;
+  border: 1px solid #77A8BB;
+  text-align: left;
+}
+
+#milestone-panel h3 {
+  color: #003366;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+#milestone-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.milestone-item {
+  padding: 0.75rem;
+  background: #FFFFFF;
+  border-left: 4px solid #FFC907;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.milestone-item.latest {
+  background: #FFF0AF;
+  border-left-color: #5AAD85;
+}
+
+.milestone-item strong {
+  display: block;
+  color: #003366;
+}
+
+#milestone-empty {
+  color: #555555;
+  font-size: 0.85rem;
+  margin: 0;
+}
