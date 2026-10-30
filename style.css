@@ -1,3 +1,6 @@
+
+/* GENERAL STYLES */
+
 * {
   box-sizing: border-box;
 }
@@ -5,12 +8,13 @@
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #e8e8e8;
-  color: #111;
+  font-family: "Montserrat", Arial, sans-serif;
+  background: #FFF7E1;
+  color: #1A1A1A;
 }
 
 button,
+select,
 .button-link {
   font: inherit;
 }
@@ -18,7 +22,7 @@ button,
 button,
 .button-link {
   border: 1px solid #333;
-  background: #fff;
+  background: #FFFFFF;
   padding: 0.8rem 1rem;
   cursor: pointer;
   text-transform: uppercase;
@@ -27,7 +31,7 @@ button,
 
 button:hover,
 .button-link:hover {
-  background: #efefef;
+  background: #EFEFEF;
 }
 
 button:disabled {
@@ -36,29 +40,14 @@ button:disabled {
 }
 
 .button-link {
-  color: #111;
+  color: #1A1A1A;
   text-decoration: none;
   text-align: center;
 }
 
-.app-shell {
-  width: min(100%, 700px);
-  margin: 0 auto;
-  min-height: 100vh;
-  background: #fff;
-  border-left: 1px solid #888;
-  border-right: 1px solid #888;
-}
-
-.screen {
-  display: none;
-  min-height: 100vh;
-  padding: 2rem;
-  text-align: center;
-}
-
-.screen.active {
-  display: block;
+:focus-visible {
+  outline: 3px solid #003366;
+  outline-offset: 3px;
 }
 
 h1,
@@ -70,6 +59,34 @@ p {
 
 h1 {
   text-transform: uppercase;
+}
+
+h1,
+h2 {
+  color: #003366;
+}
+
+
+/* MAIN APP */
+
+.app-shell {
+  width: min(100%, 700px);
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #FFFFFF;
+  border-left: 1px solid #77A8BB;
+  border-right: 1px solid #77A8BB;
+}
+
+.screen {
+  display: none;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.screen.active {
+  display: block;
 }
 
 .subtitle {
@@ -108,6 +125,60 @@ h1 {
   font-size: 1.25rem;
 }
 
+
+/* BUTTON COLORS */
+
+.primary-btn,
+#water-btn {
+  background: #FFC907;
+  color: #1A1A1A;
+}
+
+.primary-btn:hover,
+#water-btn:hover {
+  background: #E8B700;
+}
+
+
+/* DIFFICULTY SELECTION */
+
+.difficulty-selection {
+  max-width: 320px;
+  margin: 1.5rem auto;
+  text-align: center;
+}
+
+.difficulty-selection label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: #003366;
+}
+
+#difficulty-select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #003366;
+  background: #FFF7E1;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+#difficulty-description {
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+  line-height: 1.5;
+}
+
+#difficulty-display {
+  color: #003366;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+
+/* GAME HEADER */
+
 .game-header {
   display: flex;
   justify-content: space-between;
@@ -128,7 +199,7 @@ h1 {
 }
 
 #period-display {
-  margin: 1rem 0 2rem;
+  margin: 1rem 0;
   text-transform: uppercase;
 }
 
@@ -139,6 +210,9 @@ h1 {
 .character-panel h3 {
   margin-bottom: 0.5rem;
 }
+
+
+/* STATS */
 
 .stats {
   max-width: 520px;
@@ -156,16 +230,41 @@ h1 {
   text-transform: uppercase;
   font-weight: 700;
   font-size: 0.9rem;
+  gap: 1rem;
 }
 
 progress {
   width: 100%;
   height: 1.4rem;
+  accent-color: #77A8BB;
+}
+
+#hydration-bar {
+  accent-color: #36A9D6;
+}
+
+#health-bar {
+  accent-color: #5AAD85;
+}
+
+#energy-bar {
+  accent-color: #FFC907;
+}
+
+#mood-bar {
+  accent-color: #D77F9F;
+}
+
+#school-bar {
+  accent-color: #003366;
 }
 
 .school-score {
   margin-top: 1.5rem;
 }
+
+
+/* GAME ACTION BUTTONS */
 
 .action-grid {
   display: grid;
@@ -184,9 +283,29 @@ progress {
   max-width: 520px;
   margin: 1.5rem auto 0;
   padding: 1rem;
-  border: 1px solid #333;
+  border: 1px solid #77A8BB;
+  background: #FFF7E1;
   text-align: left;
+  line-height: 1.5;
 }
+
+
+/* RESET BUTTON */
+
+#reset-btn {
+  display: block;
+  margin: 1.5rem auto;
+  background: #FFF7E1;
+  border: 1px solid #003366;
+  color: #003366;
+}
+
+#reset-btn:hover {
+  background: #FFC907;
+}
+
+
+/* MODALS */
 
 .modal {
   position: fixed;
@@ -206,7 +325,7 @@ progress {
   width: min(100%, 480px);
   max-height: 90vh;
   overflow-y: auto;
-  background: #f4f4f4;
+  background: #F4F4F4;
   border: 1px solid #333;
   padding: 2rem;
   text-align: center;
@@ -219,6 +338,10 @@ progress {
 .modal-card ul {
   text-align: left;
   display: inline-block;
+}
+
+.modal-card p {
+  line-height: 1.5;
 }
 
 .water-option {
@@ -241,12 +364,26 @@ progress {
   opacity: 0.7;
 }
 
+
+/* DYNAMIC EVENT FEEDBACK */
+
 #event-effects {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.5rem;
   margin: 1.25rem 0;
-  font-weight: 700;
 }
+
+.event-effect {
+  background: #FFF7E1;
+  border-left: 4px solid #FFC907;
+  padding: 0.7rem;
+  margin: 0;
+  text-align: left;
+  font-weight: 600;
+}
+
+
+/* RESULTS */
 
 .results-list {
   max-width: 420px;
@@ -256,7 +393,7 @@ progress {
 .results-list div {
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid #bbb;
+  border-bottom: 1px solid #BBB;
   padding: 0.7rem 0;
   gap: 2rem;
 }
@@ -270,6 +407,9 @@ progress {
   font-weight: 700;
 }
 
+
+/* COMPARISON SCREEN */
+
 .comparison-table {
   max-width: 520px;
   margin: 2rem auto;
@@ -281,7 +421,7 @@ progress {
   grid-template-columns: 1.2fr 1fr 1fr;
   gap: 0.5rem;
   padding: 0.8rem;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #CCC;
 }
 
 .comparison-row:last-child {
@@ -289,7 +429,13 @@ progress {
 }
 
 .header-row {
-  background: #eee;
+  background: #FFF7E1;
+}
+
+.comparison-note {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #555;
 }
 
 .final-message {
@@ -297,9 +443,107 @@ progress {
   margin-top: 2rem;
 }
 
+
+/* FINAL SCREEN BUTTONS */
+
 .final-actions {
   margin-top: 2rem;
 }
+
+.final-actions .button-link,
+.final-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFC907;
+  color: #1A1A1A;
+  min-height: 58px;
+  padding: 0.8rem 1rem;
+  text-align: center;
+}
+
+.final-actions .button-link:hover,
+.final-actions button:hover {
+  background: #E8B700;
+}
+
+
+/* CHARITY: WATER FOOTER */
+
+.site-footer {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  background: #003366;
+  color: #FFFFFF;
+  text-align: center;
+}
+
+.site-footer nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.site-footer a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFC907;
+  color: #1A1A1A;
+  padding: 0.8rem 1rem;
+  text-decoration: none;
+  font-weight: 700;
+  min-width: 150px;
+}
+
+.site-footer a:hover {
+  background: #E8B700;
+}
+
+.site-footer .disclaimer {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin: 0;
+}
+
+
+/* CONFETTI CELEBRATION */
+
+.confetti {
+  position: fixed;
+  top: -20px;
+  width: 10px;
+  height: 15px;
+  pointer-events: none;
+  z-index: 100;
+  animation-name: confettiFall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes confettiFall {
+  from {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti {
+    animation-duration: 0.01s !important;
+  }
+}
+
+
+/* MOBILE RESPONSIVE DESIGN */
 
 @media (max-width: 520px) {
   .screen {
@@ -330,111 +574,16 @@ progress {
   }
 
   .comparison-row {
-    font-size: 0.9rem;
-  }
-}
-
-
-/* CHARITY: WATER BRAND COLORS */
-
-body {
-  background: #FFF7E1;
-  color: #1A1A1A;
-}
-
-.app-shell {
-  background: #FFFFFF;
-  border-color: #77A8BB;
-}
-
-.primary-btn,
-#water-btn {
-  background: #FFC907;
-  color: #1A1A1A;
-}
-
-.primary-btn:hover,
-#water-btn:hover {
-  background: #E8B700;
-}
-
-h1, h2 {
-  color: #003366;
-}
-
-.status-box {
-  background: #FFF7E1;
-  border-color: #77A8BB;
-}
-
-
-/* FINAL SCREEN BUTTONS */
-
-.final-actions .button-link,
-.final-actions button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background-color: #FFC907;
-  color: #1A1A1A;
-
-  min-height: 58px;
-  padding: 0.8rem 1rem;
-  text-align: center;
-}
-
-.final-actions .button-link:hover,
-.final-actions button:hover {
-  background-color: #E8B700;
-}
-
-
-/* RESET BUTTON */
-
-#reset-btn {
-  display: block;
-  margin: 1.5rem auto;
-  background-color: #FFF7E1;
-  border: 1px solid #003366;
-  color: #003366;
-}
-
-#reset-btn:hover {
-  background-color: #FFC907;
-}
-
-
-/* CONFETTI CELEBRATION */
-
-.confetti {
-  position: fixed;
-  top: -20px;
-  width: 10px;
-  height: 15px;
-  pointer-events: none;
-  z-index: 100;
-
-  animation-name: confettiFall;
-  animation-timing-function: linear;
-  animation-fill-mode: forwards;
-}
-
-@keyframes confettiFall {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
+    font-size: 0.8rem;
+    padding: 0.5rem;
+    gap: 0.25rem;
   }
 
-  100% {
-    transform: translateY(110vh) rotate(720deg);
-    opacity: 0;
+  .stat-label {
+    font-size: 0.8rem;
+  }
+
+  .modal-card {
+    padding: 1.25rem;
   }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .confetti {
-    animation-duration: 0.01s !important;
-  }
-}
-
