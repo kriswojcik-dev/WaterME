@@ -135,10 +135,14 @@ milestoneList.setAttribute("aria-live", "polite");
 milestonePanel.appendChild(milestoneHeading);
 milestonePanel.appendChild(milestoneList);
 
-// Place milestones below the stat bars
-document.querySelector("#game-screen .stats")
-  .insertAdjacentElement("afterend", milestonePanel);
+// Move status above the action buttons
+const statusBox = document.querySelector(".status-box");
+const actionGrid = document.querySelector("#game-screen .action-grid");
 
+actionGrid.insertAdjacentElement("beforebegin", statusBox);
+
+// Place achievements below the action buttons
+actionGrid.insertAdjacentElement("afterend", milestonePanel);
 
 // UPDATE MILESTONE DISPLAY
 
@@ -362,18 +366,54 @@ function updateStats() {
   document.getElementById("period-display").textContent =
     period;
 
-  const characterMessage =
-    document.getElementById("character-message");
+  
+// UPDATE MAYA'S EXPRESSION AND MESSAGE
 
-  if (game.health < 30) {
-    characterMessage.textContent = "I'm feeling really sick...";
-  } else if (game.hydration < 20) {
-    characterMessage.textContent = "I'm so thirsty...";
-  } else if (game.energy < 20) {
-    characterMessage.textContent = "I'm exhausted...";
-  } else {
-    characterMessage.textContent = "Feeling okay!";
-  }
+const characterMessage =
+  document.getElementById("character-message");
+
+const characterAvatar =
+  document.getElementById("character-avatar");
+
+let face = "(^‿^)";
+let message = "I'm feeling great!";
+
+// Physical needs take priority over mood
+if (game.health < 30) {
+  face = "(×_×)";
+  message = "I'm feeling really sick!";
+
+} else if (game.hydration < 20) {
+  face = "(>_<)";
+  message = "I'm so thirsty...";
+
+} else if (game.energy < 20) {
+  face = "(-_-)";
+  message = "I'm exhausted...";
+
+// Otherwise, expression depends on mood
+} else if (game.mood < 40) {
+  face = "(._.)";
+  message = "I'm feeling a little down...";
+
+} else if (game.mood < 70) {
+  face = "(•‿•)";
+  message = "I'm doing okay!";
+
+} else {
+  face = "(^‿^)";
+  message = "I'm feeling great!";
+}
+
+// Update Maya's face and dialogue
+characterAvatar.textContent = face + "\n/|\\";
+
+characterMessage.textContent = message;
+
+// Match the expression in the event popup
+document.getElementById("event-avatar").textContent =
+  face + "\n/|\\";
+
 
   updateWaterUnlocks();
 }
